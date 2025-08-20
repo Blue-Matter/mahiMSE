@@ -126,13 +126,13 @@ These analyses do not necessarily reflect the point of view of NOAA and in no wa
 
 ### Objective
 
-Develop an MSE framework for the Atlantic Dolphinfish (mahi mahi) fishery to test candidate management procedures and inform other managemetn decision making including research prioritization, assessment methodology, specification of fishing regulations and enforcement. 
+Develop an MSE framework for the Atlantic Dolphinfish (Mahi Mahi) fishery to test candidate management procedures and inform other management decision making including research prioritization, assessment methodology, specification of fishing regulations and enforcement. 
 
 ***
 
 ### Project details
 
-'Lead Analyst for the Dolphin Management Strategy Evaluation Project IAW the Tasks included in the Statement of Work'
+Title: 'Lead Analyst for the Dolphin Management Strategy Evaluation Project IAW the Tasks included in the Statement of Work'
 
 ```{r ProjDets, eval=T}
 dat<-data.frame(c("Term","Funding body","Funding stream","Solicitation No.","Contract No.","Project Partners","Blue Matter Team","NOAA Collaborators"),

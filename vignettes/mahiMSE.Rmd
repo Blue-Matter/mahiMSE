@@ -1,0 +1,327 @@
+---
+title: 'mahiMSE User Manual'
+author: "Tom Carruthers (<tom@bluematterscience.com>)"
+date: "`r Sys.Date()`"
+output:
+  rmarkdown::html_document:
+    number_sections: yes
+    toc: true
+    toc_float: true
+subtitle: An R package for informing management of U.S. South Atlantic Dolphinfish fisheries
+vignette: >
+  %\VignetteIndexEntry{Inverts}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+<style type="text/css">
+
+pre code {
+  word-wrap: normal;
+  white-space: pre;
+}
+body{ /* Normal  */
+   font-size: 12px;
+}
+td {  /* Table  */
+   font-size: 9px;
+}
+h1 { /* Header 1 */
+ font-size: 18px;
+ color: DarkBlue;
+}
+h2 { /* Header 2 */
+ font-size: 15px;
+ color: DarkBlue;
+}
+h3 { /* Header 3 */
+ font-size: 14px;
+ color: DarkBlue;
+}
+code.r{ /* Code block */
+  font-size: 10px;
+}
+pre { /* Code block */
+  font-size: 10px;
+  overflow-x: auto;
+}
+</style>
+
+
+
+<img src="img/Dolphinfish.png" width = 910>
+
+
+
+&nbsp;
+
+<img src="img/BM.jpg" width="140">
+<img src="img/openMSE.jpg" width="150">
+<img src="img/NOAA.png" width="160">
+
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+knitr::opts_chunk$set(dpi=85, fig.width=7.5, fig.height = 5)
+#library(RPC)
+#library(openMSE)
+#library(Inverts)
+#library(Inverts.GD)
+#library(Inverts.MC)
+```
+<br>
+<hr>
+
+
+# Foreword
+
+This research and decision support tools use operating models and MSE (Management Strategy Evaluation) simulation testing to characterize scientific uncertainty to inform robust management decision making. 
+
+<br>
+<hr>
+
+
+# Objective of this document
+
+This document is intended to describe the decision support tools and guide prospective users on how to:
+
+* work with operating models
+* design and test management procedures (MPs)
+* summarize MP performance 
+
+
+<br>
+<hr>
+
+
+# Version Notes 
+
+The package is subject to ongoing testing and development. If you find a bug or a problem please send a report to <tom@bluematterscience.com> so that it can be fixed!  
+
+<br>
+<hr>
+
+
+
+# Introduction
+
+## Dolphinfish
+
+Text 1
+
+
+## Background information
+
+Project information, links and results are available from a [project webpage](https://blue-matter.github.io/mahiMSE/)
+
+
+## Software
+
+The [openMSE R package](https://openmse.com) was used to organize fishery data, define operating models, condition operating models to data, calculate reference points and specify and test existing and alternative management options. 
+
+The [Rapid Conditioning Model](https://openmse.com/tutorial-rcm/) was used to fit operating models to observed data. 
+
+
+<br>
+<hr>
+
+
+# Installation
+
+1. Install [R for Windows](https://cran.r-project.org/bin/windows/)
+
+2. Install [RStudio](https://www.rstudio.com/products/rstudio/download/)
+
+3. Install openMSE and devtools packages
+
+Open RStudio and enter the following commands into the console:
+
+```{r install_openMSE_devtools,eval=F}
+install.packages('openMSE')
+```
+
+4. Install github packages including the Inverts and RPC R packages by opening RStudio and entering the following commands at the R console :
+
+```{r install_github_packages,eval=F}
+remotes::install_github("blue-matter/mahiMSE") 
+```
+
+
+5. Check that the installation is successful by finding this help file (the mahiMSE vignette):
+```{r load_library, eval=F}
+library(mahiMSE)
+vignette('mahiMSE')
+```
+
+If you have any difficulties please send an inquiry including some reproducible code to: tom@bluematterscience.com
+
+<br>
+<hr>
+
+
+# Quick start: run an MSE with pre-specified objects
+
+Load libraries: 
+
+```{r QS_load, eval=F}
+library(mahiMSE)
+```
+
+
+Build a historical simulation for the mini (16 simulation) version of OM_1:
+
+```{r QS_hist, eval=F}
+Hist = SimulateMOM(miniOM_1)
+```
+
+
+Create two management procedures using the mahiMP function:
+
+```{r QS_stat_quo_mse, eval=F, out.width="50%", out.height="50%", fig.height = 5}
+StatQuo = HalfEff = mahiMP
+formals(HalfEff)$Effort = 1/2
+
+myMSE = ProjectMOM(Hist, c('StatQuo','HalfEff'))               # constant current catch levels
+```
+
+Plot projected SSB and exploitation relative to MSY levels:
+
+```{r QS_stat_quo_mse_plot, eval=T, out.width="50%", out.height="50%", fig.height = 5}
+#mahiplot(myMSE)
+```
+
+
+<br>
+<hr>
+
+
+# Operating Models
+
+
+# Testing management procedures
+
+## Running simulations
+
+
+You can find out what each of these arguments do via the in-line help:
+
+```{r help_MPMC, eval=F}
+?mahiMP
+```
+
+The next section describes how these generic MPs can be modified to test a wide range of alternative management options. 
+
+
+<br>
+<hr>
+
+# Designing new management procedures
+
+## Index ratio approaches
+
+By default, the invertebrate MPs fish at current fishing effort levels without total allowable catch (TAC) control. You may however wish to invetigate options that explicity set catch limits. The simplest way to do this are empirical management procedures that use data directly and do not require an estimation / assessment step. These are increasingly applied in the management of a very wide range of fish species and their adoption is the principle objective of MSE in most fishery settings. 
+
+The most commonly applied type of empirical  management procedure aims to fish at a stable exploitation rate by setting catch limits to a fixed multiple of a relative abundance index: 
+
+
+## Index target approaches
+
+## Index slope approaches
+
+In cases where you wish to maintain a trajectory in stock biomass at some level, an alternative to index target MPs are index slope MPs. Similarly to the index target approaches you must specify a target slope ('IS.targ') and two other arguments that control the calculation of the slope ('IS.yrs') and the responsiveness of the MP ('IS.fac'):
+
+## Stock assessments 
+
+Management procedures can include estimation models that aim to mimick the real stock assessment processes. These are sometimes referred to as 'model-based MPs'. 
+
+Even in situations where stock assessments are not possible for data, logistical or management reasons, it may be desirable to evaluate their potential performance (perhaps as a yardstick for current approaches). In MSE projections, all data are simulated including types that may not be currently available. That allows for the theoretical testing of alternative more data intensive options. 
+
+The OpenMSE libraries come with a range of prespecified data-rich assessment MPs that include state-space surplus production (SP), state-space delay differential (DDSS) and statistical catch at age (SCA) models. A few derivatives are available that fish at constant FMSY ('_MSY'), constant 75% of FMSY ('_75MSY') and use a 40-10 HCR ('_4010', FMSY above 40% B0, zero fishing below 10% B0):
+
+```{r args_MP_MC_datarich, eval=F}
+
+```
+
+
+
+## Short-cuts
+
+Running model-based MPs can be computationally intensive. An alternative is to take the control points of an HCR not from an estimation model but from the operating model directly assuming some realistic level of observation (data going into the assessment) and estimation error (error in estimates of control points of an HCR in this context). Because there is no estimation, short-cuts can provide indicative results in a small fraction of the time as the full model-based MP. 
+
+## Additional TAC control parameters
+
+When using the specified MPs such as There are a number of other arguments that apply to all methods of catch advice (TAC.calc is set to 'Slope','Target' or 'Rate') that provide additional control over TAC changes. These include:
+
+* max TAC - that highest TAC level that is recommended by the MP
+* minTAC - the lowest TAC level that is recommended by the MP
+* TACdec - the highest fractional TAC decline that the MP can make (e.g. 0.2 means that TAC(y) must be higher than 0.8 x TAC(y-1))
+* TACinc - the highest fraction TAC increase that the MP can make (e.g. 0.3 mean that TAC(y) must be lower than 1.3 * TAC(y-1))
+* I.enp - Indices are processed via a polynomial smoother to try to remove noise from signal. The degree of smoothing is controlled by this parameter. ENP stands for effective number of parameters per datum. So higher ENPs are more closely fitting (less smooth) polynomials. The default of 0.25 means that for every 4 data points the polynomial adds another parameter for smoothing. 
+* I_freq - the frequency that the indices will be observed in the forward projection. Let us assume there are three indices available a vector I_freq = c(1,3,0) would mean that there would be an observation every year for index 1, a new observation every three years for index 2, and no new data for index 3. 
+* calib_yrs - the number of years used to define 'recent historical levels'. When arguments such as curI_2_target are used, they determine 'current' based on the calib_yrs number of years in the historical time period. So for example if the OMs were fitted to 2023 and calib_yrs was set to 3, the MP would use years 2021-2023 to determine 'recent' index and catch levels. 
+
+
+## Other management levers
+
+A default discarding rate and post-release mortality rate are also assumed. The shift to a new gear might be expected to change both of these. These are easily changed:
+
+
+```{r Eff_DR_Fdisc, eval=F}
+
+```
+
+
+<br>
+<hr>
+
+# Resources
+
+## splash page
+
+For more information about how operating models were specified you can visit the [project webpage](https://blue-matter.github.io/mahiMSE/)
+
+Contact (tom@bluematterscience for password)
+
+## Dolphinfish GitHub repository
+
+All of the code for conditioning operating models can be found at a private [GitHub repository](https://github.com/Blue-Matter/DolphinMSE) (contact Cassidy Peterson for access)
+
+## Inverts R packages
+
+The code for the R packages used in this manual are available from the public [mahiMSE GitHub repository](https://github.com/Blue-Matter/mahiMSE):
+
+
+## OpenMSE
+
+Visit the [OpenMSE website](https://openmse.com) for more information on the framework including tutorial and case studies.
+
+The Rapid Conditioning Model is also [described there](https://openmse.com/tutorial-rcm)
+
+Other useful openMSE apps include [MERA](https://www.merafish.org/) for rapidly scoping operating models and [Reference Point Calculator](https://shiny.bluematterscience.com/app/rpc) for investigating reference points and control rules. 
+
+## Management Strategy Evaluation
+
+The Ocean Foundation host the [Harvest Strategies website](https://harveststrategies.org/) which is an excellent resource describing MSE, MSE concepts and how MSE can be used in fishery management including introductory videos and interviews with experts. 'Harvest strategy' and Management Procedure are synonymous by the way. 
+
+<br>
+<hr>
+
+# References
+
+Hordyk, A., Huynh, Q., Carruthers, T. 2025. OpenMSE: An open-source R package for Management strategy evaluation, available from: https://openmse.com
+
+Huynn, Q., 2025. Rapid Conditioning model. Available from [https://openmse.com/tutorial-rcm/](https://openmse.com/tutorial-rcm/) 
+
+Punt, A.E., Butterworth, D.S., de Moor, C.L., De Oliveira, J.A.A., and Haddon, M. 2016. Management strategy evaluation: Best practices. Fish Fish. 17(2): 303–334. doi:10.1111/faf.12104. 
+
+
+```{r, echo=FALSE, eval=FALSE}
+sfStop()                            
+```
+
+<br>
+<hr>
+
