@@ -24,7 +24,7 @@ mahiMPcheck = function(DataList, Effort,  TAC,  Smin, Smax, BL,
 
   if(!is.na(Smin[1]) & !length(Smin)%in%c(1,nf)) stop(paste0("Smin must be either a single number or a vector ",nr, " long"))
   if(!is.na(Smax[1]) & !length(Smax)%in%c(1,nf)) stop(paste0("Smax must be either a single number or a vector ",nr, " long"))
-  if(!is.na(BL[1]) & length(BL)!=nf) stop(paste0("BL_area must be a vector ",nf, " long"))
+  if(!is.na(BL[1]) & length(BL)!=nf) stop(paste0("BL must be a vector ",nf, " long"))
   #cat("mahiMPcheck CLEARED \n")
 }
 
@@ -81,18 +81,20 @@ calc_BL_RR = function(mu, cv, bl){
     # p2 = size/(size+mu)        #
     # var2 = size*(1-p)/(p*p) # check
     dens = dnbinom(CR,size,mu=mu)
-    cond = CR>bl
-    nfish = dens*CR
-    return(sum(nfish[cond])/sum(nfish))
+    cond = CR > bl
+    blfish = nfish = dens * CR
+    blfish[cond] = dens[cond] * bl # no longer catch rate but limited to bag limit
+
+    return(1-sum(blfish)/sum(nfish))
   }else{
     return(NaN)
   }
 }
 
-        #getBL_Fmod(BL, qq, BGmu, BGcv, F_qfr[qq,,], S_fa, hB_ar, B_ar)
+        #getBL_Fmod(BL, qq, BGmu, BGcv, F_qfr[qq,,], hB_ar, B_ar)
 getBL_Fmod=function(BL, qq, BGmu, BGcv, F_fra, hB_ar, B_ar){
 
-  nf = nrow(S_fa); na = ncol(S_fa); nr = ncol(B_ar)
+  nf = dim(F_fra)[1]; nr = dim(F_fra)[2]; na = dim(F_fra)[3];
   hVB_fra = VB_fra = array(NA,c(nf,nr,na))
   FRA = as.matrix(expand.grid(1:nf,1:nr,1:na)); AR = FRA[,3:2]; FR = FRA[,1:2]; FA = FRA[,c(1,3)]
   hVB_fra[FRA] = hB_ar[AR] * F_fra[FRA]
@@ -159,7 +161,7 @@ Rec_Effort = function(Rec, x, DataList, Effort, BL, Smin, Smax, F_qfr, S_fa, BGm
   Rec
 }
 
-map_TAC = function(TAC, BL = NA, Smin = NA, Smax = NA, F_qfr, S_fa, B_qar, qq, hB_ar, B_ar, Len_age, LenCV){
+map_TAC = function(TAC, BL = NA, Smin = NA, Smax = NA, F_qfr, S_fa, BGmu, BGcv, B_qar, qq, hB_ar, B_ar, Len_age, LenCV){
 
   nq = dim(F_qfr)[1]; nr = dim(F_qfr)[3];  nf = dim(F_qfr)[2]; na = dim(S_fa)[2]
  # F_fr = F_qfr[qq,,]
@@ -246,7 +248,7 @@ Rec_TAC = function(Rec, x, DataList, TAC, BL, Smin, Smax, C_qfr, F_qfr, S_fa, BG
   na = length(Len_age)
   LenCV = DataList[[1]][[1]]@Misc$StockPars$LenCV[x]
 
-  map = map_TAC(TAC, BL, Smin, Smax, F_qfr, S_fa, B_qar, qq, hB_ar, B_ar, Len_age, LenCV)
+  map = map_TAC(TAC, BL, Smin, Smax, F_qfr, S_fa, BGmu, BGcv, B_qar, qq, hB_ar, B_ar, Len_age, LenCV)
 
   for(ss in 1:length(DataList)){
     for(rr in 1:length(DataList[[ss]])){

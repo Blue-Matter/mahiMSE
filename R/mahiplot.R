@@ -36,10 +36,10 @@ mahiqplot = function(mu, sims, xval, vline, ny, MPcols, ylab, npy, iqr = 0.70){
 #' mahiplot(myMSE)
 #' @author T. Carruthers
 #' @export
-mahiplot = function(MSE, iqr = 0.8, MPcols = c("red","green","blue","orange","grey","purple"),npy=20){
+mahiplot = function(MSE, iqr = 0.8, MPcols = c("red","green","blue","orange","grey","purple"),npy=20, MPnams = NA){
 
   nsubyr = 4
-  MPnams = unlist(MSE@MPs)
+  if(is.na(MPnams[1]))MPnams = unlist(MSE@MPs)
   CurrentYr = MSE@OM[[1]][[1]]$CurrentYr[1]
   nsim = MSE@nsim; nMP = MSE@nMPs
   nt = MSE@nyears;  pt = MSE@proyears;   at = nt+pt;   ny = nt/nsubyr; py = pt/nsubyr; ay = at/nsubyr
@@ -50,7 +50,7 @@ mahiplot = function(MSE, iqr = 0.8, MPcols = c("red","green","blue","orange","gr
   histy = MSE@multiHist[[1]][[1]]
 
   # SSB calcs
-  SSB = MSE@SSB[,1,,] /1E6 # kt only one stock SMT Simulation, MP, Timestep
+  SSB = MSE@SSB[,1,,] / 1E6 # kt only one stock SMT Simulation, MP, Timestep
   hSSB = apply(histy@TSdata$SBiomass,1:2,sum) / 1E6# ST , Simulation Time step
   ASSB = array(NA, c(nsim, nMP, at)) # SMT
   for(MP in 1:nMP)ASSB[,MP,1:nt] = hSSB # historical SSB by MP fill
@@ -73,4 +73,6 @@ mahiplot = function(MSE, iqr = 0.8, MPcols = c("red","green","blue","orange","gr
   legend('topright',legend=MPnams,text.col=MPcols,text.font=2,cex=0.85,bty='n')
   mahiqplot(mu=muASSBy,sims=ASSBy,xval = ylab, vline = CurrentYr+0.5, ny=ny, MPcols = MPcols, "SSB (kt)",npy, iqr=iqr)
   mtext("Year",1,line=1,outer=T)
+
+  list(Yield = muACy, SSB = muASSBy)
 }

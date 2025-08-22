@@ -12,7 +12,7 @@ mahiMP(
   Smin = NA,
   Smax = NA,
   BL = NA,
-  PRM = 0.9,
+  PRM = 0.85,
   ...
 )
 }

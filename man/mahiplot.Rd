@@ -8,7 +8,8 @@ mahiplot(
   MSE,
   iqr = 0.8,
   MPcols = c("red", "green", "blue", "orange", "grey", "purple"),
-  npy = 20
+  npy = 20,
+  MPnams = NA
 )
 }
 \arguments{

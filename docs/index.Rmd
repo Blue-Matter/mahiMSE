@@ -73,6 +73,7 @@ library(openMSE)
 library(dplyr)
 library(kableExtra)
 library(readxl)
+library(mahiMSE)
 
 knitr::opts_chunk$set(echo = FALSE)
 
@@ -95,6 +96,17 @@ maketab <- function(dir,Alab="Statistical Area"){
 
 
 
+plotatab <- function(filey,sheet,head=T){
+  if(head){
+    dat = read_xlsx(paste0(getwd(),"/",filey),sheet)
+    kable(dat,"simple") 
+  }else{
+    dat = read_xlsx(paste0(getwd(),"/",filey),sheet,col_names=F)
+    kable(dat,"simple",col.names=rep("",ncol(dat))) 
+  }
+}
+
+
 getprojectinfo<-function(page){
   tab=as.data.frame(read_excel("project_Info/Status Assumptions To do.xlsx", sheet = page))
   tab=tab[,2:3]
@@ -114,7 +126,7 @@ getprog<-function(page){
 ```
 
 
-### Disclaimer
+## Disclaimer
 
 The following work is preliminary and intended only as tool for eliciting feedback on data, modelling and other aspects of this fishery. 
 
@@ -124,27 +136,27 @@ These analyses do not necessarily reflect the point of view of NOAA and in no wa
 
 ***
 
-### Objective
+## Objective
 
 Develop an MSE framework for the Atlantic Dolphinfish (Mahi Mahi) fishery to test candidate management procedures and inform other management decision making including research prioritization, assessment methodology, specification of fishing regulations and enforcement. 
 
 ***
 
-### Project details
+## Project details
 
 Title: 'Lead Analyst for the Dolphin Management Strategy Evaluation Project IAW the Tasks included in the Statement of Work'
 
 ```{r ProjDets, eval=T}
 dat<-data.frame(c("Term","Funding body","Funding stream","Solicitation No.","Contract No.","Project Partners","Blue Matter Team","NOAA Collaborators"),
                 
-                 c("June 2024 - May 2025, June 2025 - May 2026",
+                 c("June 2024 - May 2025, June 2025 - Feb 2026",
                    "U.S. National Oceanic and Atmospheric Administration",
                    "Sam.gov",
                    "# 1305M324Q0309, NA",
                    "1305M324P0270, NA",
                    "Blue Matter Science Ltd.",
                    "Tom Carruthers, Adrian Hordyk, Quang Huynh",
-                   "Cassidy Peterson, Matt Damiano"))
+                   "Cassidy Peterson (Matt Damiano)"))
 
 kable(dat,"simple",col.names=rep("",2)) 
 
@@ -152,73 +164,119 @@ kable(dat,"simple",col.names=rep("",2))
 
 ***
 
-### Progress
+## Progress
 
-The Prerequisite phase has been completed. MSE framework development is current in the Foundation and Initial phases (Figure 1). Rapid progress is expected towards the Revision phase since much of the supporting meetings, research and analyses have been completed. 
+The Prerequisite and Foundation phases have been completed (Figure 1). The initial phase will be completed with an update to the historical catch data ('final dataset for OM conditioning'). Work has begun on designing an mahiMP management procedure that can mimic current management and can be modified to implement regulations such as trip limits and size limits in addition to TAC control linked to relative abundance indices.
 
-<img src="img/Roadmap.png" width = 650>
+<img src="img/Roadmap2.png" width = 650>
 
 Figure 1. Progress in the MSE roadmap. For more information about the roadmap and the various steps see the [supporting document](supporting/MSE_roadmap_Carruthers.pdf)
 
-### Study area and spatial structure 
+***
 
-Salt =  c("NED", "VBM", "NNC", "NCFL", "FLK", "SAR", "CAR") # map
+## Products
 
+* DolphinMSE - a private github repository containing data and methods for operating model development. 
 
-### Operating model conditioning
+* mahiMSE - a public github repository containing operating models, management procedures (harvest strategies) and performance metrics.
 
-Operating models were fitted to annual catch data by fleet ()
-
-Fnames = c("US comm", "MRIP private north", "MRIP private south", "MRIP for-hire north",
-           "MRIP for-hire south", "Intl (reported)", "Discards", "Unreported")
+* TSD - The trial specifications document, a comprehensive guide to MSE framework development to ensure reproducibility. 
 
 
-[A fit to an OM (lowM) (.html)](reports/OMs/index.html)
+***
 
-see example fit
+## Current Priorities
 
-&nbsp;
+Table 3. MSE framework development priorities
 
-
-
-
-### Resources
-
-harvest strategies
-
-
-#### TSD
-
-
-
-
-### Appendix A. About Management Strategy Evaluation
-
-#### MSE Concepts 
-
-#### MSE schematic
-
-```{r C1, eval=T}
-
-getwd()
- 
+```{r ToDo, eval=T,echo=F}
+plotatab('tables/Various.xlsx','ToDo')
 
 ```
 
+***
 
-### Operating models 
+## Trial Specifications Document
+
+The [TSD](supporting/TSD.html) provides a comprehensive guide to MSE design including a description of the specification of the various operating models, input data, operating model conditioning, operating model spatial/seasonal structure, fleet definitions and performance metrics. 
+
+
+***
+
+## Reference Grid of Operating Models
+
+Currently, the reference grid of operating models spans high and low values for aspects of population dynamics that are typically most consequential in determining management procedure performance: 
+
+* natural mortality rate (M, longevity, the number of cohorts in the population),
+
+* steepness of the stock recruitment relationship (h, resilience, how well recruitment strength is maintained at low stock sizes phrased as the fraction of unfished recruitment at 1/5 unfished stock size),
+
+* future recruitment strength (phrased as a fraction of the historical unfished recruitment level).
+
+Since operating models are spatial, in addition to these three axes of uncertainty also included is 
+
+* stock viscosity (V, phrased as the probability that individuals stay in the same area among seasons). When the spatial dynamics are imposed on the spatially aggregated model, this is the prior assigned to each area and can be overridden in cases where there are large changes in biomass in an area among seasons. For example, in a case where 30% of the stock is found in an area (according to the VAST spatial index) and only 5% is found in the following season, the probability of staying will be much lower than the prescibed prior. 
+
+These four axes of uncertainty produce a grid of 16 reference set operating models (Table 1). Since there is considerable uncertainty over unreported and international catches, a fifth axis may be added to a revised set in which the level of those catches is varied which ultimately impacts the scale of estimated stock and the relative impact of management procedures for U.S. fisheries.
+
+
+Table 1. The reference grid of operating models spanning high and low values of natural mortality rate (M), steepness of the stock recruitment curve (Steep), projected recruitment strength as a multiplier of mean historical recruitment strength and viscosity (the mean probability of staying in a given area between seasons). 
+
+```{r RefGrid, eval=T}
+OM_no = 1:nrow(ref_grid)
+OMtab = cbind(OM_no, ref_grid)
+kable(OMtab,"simple") 
+
+```
+***
+
+## Operating model conditioning
+
+The 16 operating models of the reference set include two axes that are applied after operating model fitting to data (future recruitment level, viscosity) and hence there are only 4 fitted operating models that span the four scenarios for natural mortality rate (M, high/low) and steepness (h, high/low) (Table 2). 
+
+Spatially aggregated, seasonal operating models were fitted to annual catch data and length composition data by fleet, and the relative abundance indices dervied from a spatial analysis of U.S. commercial catch rate data. 
+
+
+Table 2. Operating models fits given various assumptions about instantaneous natural mortality rate (M) and stock resilience (steepness of the Beverton-Hold stock recruitment relationship).
+
+```{r}
+maketab("./OMs","Operating Model Conditioning")
+```
+
+&nbsp;
+
+***
+
+## Resources
+
+The Ocean Foundation provides excellent introductory materials on MSE and management procedures (harvest strategies) at their [harvest strategies website](https://harveststrategies.org/))
+
+The [openMSE website](https://openmse.com/) contains extensive documentation about openMSE and approaches such as RCM. 
+
+***
+
+## Glossary
+
+Table 3. Glossary of MSE terminology and acronyms
+
+```{r Glossary, eval=T,echo=F}
+plotatab('tables/Various.xlsx','Glossary')
+
+```
+
+## More on Operating Models 
 
 An operating model is a theoretical description of fishery and population dynamics used for the testing of management strategies that could include, for example,  data collection protocols, stock assessment methods, harvest control rules, enforcement policies and reference points. In fisheries, operating models are used in closed-loop simulation to test management procedures (aka. harvest strategy) accounting for feedbacks between the system, data, management procedure and implementation. A management procedure is any codifable rule that calculates management advice from data. Management Strategy Evaluation uses closed-loop simulation of management procedures as a core technical component but is a wider process of stakeholder and manager engagement that identifies system uncertainties, performance metrics, viable management procedures, ultimately aiming to adopt an MP for the provision of management advice for an established time period. 
 
 &nbsp;
 
-#### Reference Case Operating Models
+### Reference Case Operating Model
 
 The reference case operating model is used as the single 'base' operating model from which reference set and robustness set operating models are specified. Reference and robustness tests are typically 1-factor departures from the reference case OM, however sometimes reference set OMs are organized in a factorial grid across primary axes of uncertainty. 
 
 &nbsp;
 
-#### Reference Set Operating Models
+### Reference Set Operating Models
 
 Reference set operating models span a plausible range of the core uncertainties for states of nature. These are often the types of alternative parameterizations or assumptions that would be included in a stock assessment sensitivity analysis. 
 
@@ -226,7 +284,7 @@ The role of the reference set operating models is to provide the central basis f
 
 &nbsp;
 
-#### Robustness Set Operating Models
+### Robustness Set Operating Models
 
 Robustness set operating models are intended to include additional sources of uncertainty for providing further discrimination among management procedures that perform comparably among reference set operating models. 
 
@@ -237,71 +295,59 @@ Robustness operating models often represent system states of nature that are not
 ***
 
 
-#### Operating Model Specification
-
-operating models were constructed assuming that discrete populations occur at the resolution of statistical area (management area). Models were conditioned using the Rapid Conditioning Model (RCM) of openMSE (SAMtool package, Huynh et al. 2023) and fitted to historical catches, standardized catch-per-unit-effort, sub area age composition data, a current estimate of absolute biomass and biomass trends within statistical area based on bed-level survey data. Given an assumption of asymptotic fleet selectivity and the availability of the absolute biomass estimate, it was possible to estimate natural mortality rate from an informative prior. 
-
-The Reference Case operating model presented here is for statistical area 14 which had numerous age-composition data. 
-
-MSE-style closed-loop projections were undertaken for the current harvest rate (the principal management guideline) and current catch levels. 
-
-&nbsp;
-
-
-<img src="../figures/movement/dolphin_fit_simulation_50.jpg" width="300">
-
-Figure 1. Simulated spatial distribution 
-
-&nbsp;
-
-#### Reference Case Operating Model
-
-
-&nbsp;
-
-
-
-Table 3c. Green urchin assumptions and to-do list
-```{r}
-getprojectinfo("Dolphin")
-```
-
-&nbsp;
-
-
-#### Meeting Notes etc. 
-
-
-***
-
-### Software and Code
-
+## Software and Code
 
 [Rapid Conditioning Model (RCM) (Huynh 2024)](https://samtool.openmse.com/reference/RCM.html)
 
 [OpenMSE (Hordyk et al. 2024)](https://openMSE.com)
 
-***
+[mahiMSE (public, the MSE R package)](https://github.com/Blue-Matter/mahiMSE)
 
-
-### Recent Presentations
-
+[DolphinMSE (private, data and code for operating models)](https://github.com/Blue-Matter/DolphinMSE)
 
 ***
 
-### References
 
+## Recent Presentations
 
-Peterson, C., Karnauskas,M.,  McPherson, M., Hadley, J., Blake, S., Byrd, J. 2021. Report of the South Atlantic dolphinfish management strategy evaluation stakeholder workshops NOAA Technical Memorandum NMFS-SEFSC-781
-available from https://repository.library.noaa.gov/view/noaa/61285
-
+Coming soon. 
 
 
 ***
 
-### Acknowledgements
+## References
 
-Many thanks to 
+[Damiano, M., Karnauskas, M., Merten, W., Cao, J. 2024. Spatiotemporal dynamics of dolphinfish (Coryphaena hippurus) in the western Atlantic Ocean. Fish Bull. 2024](https://spo.nmfs.noaa.gov/sites/default/files/pdf-content/fish-bull/12212_03_Damiano_508.pdf)
+
+Hadley, J., Mehta, K.N. 2021. Amendment 10 to the Fishery Management Plan for the Dolphin and Wahoo Fishery of the Atlantic. Available from https://repository.library.noaa.gov/view/noaa/32989
+
+Hordyk, A. 2025. Slick decision analysis. Available from: [https://harveststrategies.org/slick-user-guide.html](https://harveststrategies.org/slick-user-guide.html) 
+
+Hordyk, A., Huynh, Q., Carruthers, T. 2025. OpenMSE: An open-source R package for Management strategy evaluation, available from: https://openmse.com
+
+Huynh, Q., 2025. Rapid Conditioning model. Available from [https://openmse.com/tutorial-rcm/](https://openmse.com/tutorial-rcm/) 
+
+Peterson, C., Karnauskas, M., McPherson, M., Hadley, J., Blake, S., Byrd, J. 2024. Report of the South Atlantic dolphinfish management strategy evaluation stakeholder workshops. NOAA Tech. Memo. NMFS-SEFSC-781, 35 p. Available from [https://repository.library.noaa.gov/view/noaa/61285](https://repository.library.noaa.gov/view/noaa/61285)
+
+Punt, A.E., Butterworth, D.S., de Moor, C.L., De Oliveira, J.A.A., and Haddon, M. 2016. Management strategy evaluation: Best practices. Fish Fish. 17(2): 303–334. doi:10.1111/faf.12104. 
+
+Thorson, J.T., 2019. Guidance for decisions using the Vector Autoregressive Spatio-Temporal (VAST) package in stock, ecosystem, habitat and climate assessments. Fish. Res. 210, 143–161. https://doi.org/10.1016/j.fishres.2018.10.013
+
+
+***
+
+## Acknowledgements
+
+Many thanks to the hard work of our project collaborators. 
+
+Stakeholder Science Team: Matt Damiano, Mandy Karnauskas, Matt McPherson, Suzana Blake, Julia Byrd, John Hadley, Nikhil Mehta, Wess Merten, Lela Schlenker. 
+
+MSE Modelling Technical Team: Matt Damiano, Kyle Shertzer, John Walter, Cassidy Peterson
+
+Blue Matter: Tom Carruthers, Adrian Hordyk, Quang Huynh
+
+OpenMSE was developed with support from the Natural Resources Defense Council (NRDC), the Gordon and Betty Moore Foundation, the Packard Foundation, the Marine Stewardship Council, Fisheries and Oceans Canada (DFO), the U.S. National Oceanic and Atmospheric Administration, the International Commission for the Conservation of Atlantic Tunas (ICCAT) and The Ocean Foundation.
+
 
 ***
 

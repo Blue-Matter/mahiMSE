@@ -30,7 +30,7 @@
 mahiMP = function(x, DataList,
                   Effort = NA,  TAC = NA,
                   Smin = NA, Smax = NA,
-                  BL = NA, PRM = 0.9, ...){
+                  BL = NA, PRM = 0.85, ...){
 
   # Fleets (n=8): (1) USCom, (2) RecN, (3) RecS, (4) HireN, (5) HireS, (6) Intl, (7) Disc, (8) UnRep
   # Areas  (n=7): (1) NED, (2) NE, (3) NC, (4) SE, (5) SFL, (6) SAR, (7) CAR

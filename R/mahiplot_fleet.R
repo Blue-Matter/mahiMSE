@@ -20,9 +20,9 @@ get_cat_area = function(MSE){
 }
 
 
-mahiplot_area = function(MSE,iqr = 0.8, MPcols = c("red","green","blue","orange","grey","purple"),npy=20){
+mahiplot_area = function(MSE,iqr = 0.8, MPcols = c("red","green","blue","orange","grey","purple"),npy=20, MPnams=NA){
   nsubyr = 4
-  MPnams = unlist(MSE@MPs)
+  if(is.na(MPnams[1]))MPnams = unlist(MSE@MPs)
   CurrentYr = MSE@OM[[1]][[1]]$CurrentYr[1]
   nsim = MSE@nsim; nMP = MSE@nMPs
   nt = MSE@nyears;  pt = MSE@proyears;   at = nt+pt;   ny = nt/nsubyr; py = pt/nsubyr; ay = at/nsubyr
