@@ -249,7 +249,7 @@ maketab("./OMs","Operating Model Conditioning")
 
 ## Resources
 
-The Ocean Foundation provides excellent introductory materials on MSE and management procedures (harvest strategies) at their [harvest strategies website](https://harveststrategies.org/))
+The Ocean Foundation provides excellent introductory materials on MSE and management procedures (harvest strategies) at their [harvest strategies website](https://harveststrategies.org/)
 
 The [openMSE website](https://openmse.com/) contains extensive documentation about openMSE and approaches such as RCM. 
 
