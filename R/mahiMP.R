@@ -22,7 +22,7 @@
 #' @param Smin Minimum size limit (mm). Positive real number. Can be a single number (all fleets) or a vector nfleets long (8).
 #' @param Smax Maximum size limit (mm). Positive real number larger than Smin (if specified). Can be a single number (all fleets) or a vector nfleets long (8).
 #' @param BL Bag limit (fish retained per trip). Positive integer. Can be a single number (all fleets) or a vector nfleets long (8). Note that predictive models are only available for RecS and HireS in regions FLK and NCFL.
-#' @param PRM Post Release Mortality (discard mortality). Fraction. Can be a single number or a vector of length nareas (7).
+#' @param PRM Post Release Mortality (discard mortality). Fraction. Default from US hook and line estimates of Rudershausen et al 2019 (DOI: 10.1002/nafm.10348). Can be a single number or a vector of length nareas (7).
 #' @examples
 #' mahiMP(1, Example_data)
 #' @author T. Carruthers
@@ -30,7 +30,7 @@
 mahiMP = function(x, DataList,
                   Effort = NA,  TAC = NA,
                   Smin = NA, Smax = NA,
-                  BL = NA, PRM = 0.85, ...){
+                  BL = NA, PRM = 0.25, ...){
 
   # Fleets (n=8): (1) USCom, (2) RecN, (3) RecS, (4) HireN, (5) HireS, (6) Intl, (7) Disc, (8) UnRep
   # Areas  (n=7): (1) NED, (2) NE, (3) NC, (4) SE, (5) SFL, (6) SAR, (7) CAR

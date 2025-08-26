@@ -247,13 +247,106 @@ maketab("./OMs","Operating Model Conditioning")
 
 ***
 
-## Resources
+
+## MSE Resources
 
 The Ocean Foundation provides excellent introductory materials on MSE and management procedures (harvest strategies) at their [harvest strategies website](https://harveststrategies.org/).
 
 The [openMSE website](https://openmse.com/) contains extensive documentation about openMSE and approaches such as RCM. 
 
 ***
+
+
+## Software and Code
+
+[Rapid Conditioning Model (RCM) (Huynh 2024)](https://samtool.openmse.com/reference/RCM.html)
+
+[OpenMSE (Hordyk et al. 2024)](https://openMSE.com)
+
+[mahiMSE (public, the MSE R package)](https://github.com/Blue-Matter/mahiMSE)
+
+[DolphinMSE (private, data and code for operating models)](https://github.com/Blue-Matter/DolphinMSE)
+
+***
+
+
+## Dolphin Links
+
+[NOAA Dolphinfish MSE page](https://www.fisheries.noaa.gov/southeast/science-data/dolphinfish-management-strategy-evaluation-us-atlantic). Includes various links. 
+
+[Data analysis quarto book (Karnauskas 2024)](https://sefsc.github.io/SEFSC-dolphin-analyses/)
+
+***
+
+
+## Reports 
+
+[Stakeholder workshop report](https://repository.library.noaa.gov/view/noaa/61285). Stakeholder workshop meeting materials are appended. 
+
+[Dolphin / wahoo participatory modeling workshop report](https://repository.library.noaa.gov/view/noaa/39878). Note that this was pre-MSE stakeholder workshops, but includes relevant background info.
+
+
+***
+
+## Recent Presentations
+
+[April SSC Meeting](https://safmc.net/documents/9_dolphinfish_mse_april2025_ssc-pdf/). Dolphin management strategy evaluation: SSC review 1.
+
+[April Dolphin Wahoo AP Meeting](https://safmc.net/documents/dwap_a2_dolphinmse_update_202504-pdf/). Update on the dolphin management strategy evaluation.
+
+[December Council Meeting](https://safmc.net/documents/dw_a1_dolphinmse_dec2024update_202412-pdf/). Update on the dolphin management strategy evaluation.
+
+[June Council Meeting](https://safmc.net/documents/fc1_a5_dolphinmseupdate_202406-pdf/). Update on the dolphin management strategy evaluation.
+
+[December Council Meeting](https://safmc.net/documents/dw_a2_dolphin_mse_update_202312-pdf/). Update on the dolphin management strategy evaluation. 
+
+[November Dolphin Wahoo AP Meeting](https://safmc.net/documents/dwap_a6a_dolphinmse_presentation_202311-pdf/). Dolphin management strategy evaluation: plans and progress.
+
+[June Council Meeting](https://safmc.net/documents/dw_a1_dolphinmseupdate_202306-pdf/). Update on the dolphinfish management strategy evaluation. 
+
+[December Council Meeting](https://safmc.net/documents/fc3_a5a_dolphinmse_update_dec2022/). Update on the dolphinfish management strategy evaluation stakeholder workshops.
+
+
+***
+
+
+## References
+
+[Damiano, M., Karnauskas, M., Merten, W., Cao, J. 2024. Spatiotemporal dynamics of dolphinfish (Coryphaena hippurus) in the western Atlantic Ocean. Fish Bull. 2024](https://spo.nmfs.noaa.gov/sites/default/files/pdf-content/fish-bull/12212_03_Damiano_508.pdf)
+
+Hadley, J., Mehta, K.N. 2021. Amendment 10 to the Fishery Management Plan for the Dolphin and Wahoo Fishery of the Atlantic. Available from https://repository.library.noaa.gov/view/noaa/32989
+
+Hordyk, A. 2025. Slick decision analysis. Available from: [https://harveststrategies.org/slick-user-guide.html](https://harveststrategies.org/slick-user-guide.html) 
+
+Hordyk, A., Huynh, Q., Carruthers, T. 2025. OpenMSE: An open-source R package for Management strategy evaluation, available from: https://openmse.com
+
+Huynh, Q., 2025. Rapid Conditioning model. Available from [https://openmse.com/tutorial-rcm/](https://openmse.com/tutorial-rcm/) 
+
+Peterson, C., Karnauskas, M., McPherson, M., Hadley, J., Blake, S., Byrd, J. 2024. Report of the South Atlantic dolphinfish management strategy evaluation stakeholder workshops. NOAA Tech. Memo. NMFS-SEFSC-781, 35 p. Available from [https://repository.library.noaa.gov/view/noaa/61285](https://repository.library.noaa.gov/view/noaa/61285)
+
+Punt, A.E., Butterworth, D.S., de Moor, C.L., De Oliveira, J.A.A., and Haddon, M. 2016. Management strategy evaluation: Best practices. Fish Fish. 17(2): 303–334. doi:10.1111/faf.12104. 
+
+Thorson, J.T., 2019. Guidance for decisions using the Vector Autoregressive Spatio-Temporal (VAST) package in stock, ecosystem, habitat and climate assessments. Fish. Res. 210, 143–161. https://doi.org/10.1016/j.fishres.2018.10.013
+
+
+***
+
+## Acknowledgements
+
+Many thanks to the hard work of our project collaborators. 
+
+Stakeholder Science Team: Matt Damiano, Mandy Karnauskas, Matt McPherson, Suzana Blake, Julia Byrd, John Hadley, Nikhil Mehta, Wess Merten, Lela Schlenker. 
+
+MSE Modelling Technical Team: Matt Damiano, Kyle Shertzer, John Walter, Cassidy Peterson
+
+Blue Matter: Tom Carruthers, Adrian Hordyk, Quang Huynh
+
+OpenMSE was developed with support from the Natural Resources Defense Council (NRDC), the Gordon and Betty Moore Foundation, the Packard Foundation, the Marine Stewardship Council, Fisheries and Oceans Canada (DFO), the U.S. National Oceanic and Atmospheric Administration, the International Commission for the Conservation of Atlantic Tunas (ICCAT) and The Ocean Foundation.
+
+OpenMSE continues to be developed with the support of the The Ocean Foundation. 
+
+
+*** 
 
 ## Glossary
 
@@ -291,62 +384,6 @@ Robustness set operating models are intended to include additional sources of un
 Robustness operating models often represent system states of nature that are not empirically informed or are hypotheses of a subset of stakeholders.
 
 &nbsp;
-
-***
-
-
-## Software and Code
-
-[Rapid Conditioning Model (RCM) (Huynh 2024)](https://samtool.openmse.com/reference/RCM.html)
-
-[OpenMSE (Hordyk et al. 2024)](https://openMSE.com)
-
-[mahiMSE (public, the MSE R package)](https://github.com/Blue-Matter/mahiMSE)
-
-[DolphinMSE (private, data and code for operating models)](https://github.com/Blue-Matter/DolphinMSE)
-
-***
-
-
-## Recent Presentations
-
-Coming soon. 
-
-
-***
-
-## References
-
-[Damiano, M., Karnauskas, M., Merten, W., Cao, J. 2024. Spatiotemporal dynamics of dolphinfish (Coryphaena hippurus) in the western Atlantic Ocean. Fish Bull. 2024](https://spo.nmfs.noaa.gov/sites/default/files/pdf-content/fish-bull/12212_03_Damiano_508.pdf)
-
-Hadley, J., Mehta, K.N. 2021. Amendment 10 to the Fishery Management Plan for the Dolphin and Wahoo Fishery of the Atlantic. Available from https://repository.library.noaa.gov/view/noaa/32989
-
-Hordyk, A. 2025. Slick decision analysis. Available from: [https://harveststrategies.org/slick-user-guide.html](https://harveststrategies.org/slick-user-guide.html) 
-
-Hordyk, A., Huynh, Q., Carruthers, T. 2025. OpenMSE: An open-source R package for Management strategy evaluation, available from: https://openmse.com
-
-Huynh, Q., 2025. Rapid Conditioning model. Available from [https://openmse.com/tutorial-rcm/](https://openmse.com/tutorial-rcm/) 
-
-Peterson, C., Karnauskas, M., McPherson, M., Hadley, J., Blake, S., Byrd, J. 2024. Report of the South Atlantic dolphinfish management strategy evaluation stakeholder workshops. NOAA Tech. Memo. NMFS-SEFSC-781, 35 p. Available from [https://repository.library.noaa.gov/view/noaa/61285](https://repository.library.noaa.gov/view/noaa/61285)
-
-Punt, A.E., Butterworth, D.S., de Moor, C.L., De Oliveira, J.A.A., and Haddon, M. 2016. Management strategy evaluation: Best practices. Fish Fish. 17(2): 303–334. doi:10.1111/faf.12104. 
-
-Thorson, J.T., 2019. Guidance for decisions using the Vector Autoregressive Spatio-Temporal (VAST) package in stock, ecosystem, habitat and climate assessments. Fish. Res. 210, 143–161. https://doi.org/10.1016/j.fishres.2018.10.013
-
-
-***
-
-## Acknowledgements
-
-Many thanks to the hard work of our project collaborators. 
-
-Stakeholder Science Team: Matt Damiano, Mandy Karnauskas, Matt McPherson, Suzana Blake, Julia Byrd, John Hadley, Nikhil Mehta, Wess Merten, Lela Schlenker. 
-
-MSE Modelling Technical Team: Matt Damiano, Kyle Shertzer, John Walter, Cassidy Peterson
-
-Blue Matter: Tom Carruthers, Adrian Hordyk, Quang Huynh
-
-OpenMSE was developed with support from the Natural Resources Defense Council (NRDC), the Gordon and Betty Moore Foundation, the Packard Foundation, the Marine Stewardship Council, Fisheries and Oceans Canada (DFO), the U.S. National Oceanic and Atmospheric Administration, the International Commission for the Conservation of Atlantic Tunas (ICCAT) and The Ocean Foundation.
 
 
 ***

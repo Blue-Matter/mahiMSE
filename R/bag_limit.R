@@ -1,9 +1,34 @@
 # bag limit analysis and code
 
 
+RRposthoc = function(dat,TL=c(54, 50, 45, 40, 35, 30)){
+
+  RRdat = NULL
+  totcat = dat$Catch
+  for(i in 1:length(TL)){
+    retcat = dat$Catch; retcat[retcat>TL[i]] = TL[i]
+    tot = aggregate(totcat,by=list(dat$Year, dat$Area),sum)
+    ret = aggregate(retcat,by=list(dat$Year, dat$Area),sum)
+    rel = (1-ret$x/tot$x) * 100
+    tempdat = data.frame(Year = tot$Group.1, State = tot$Group.2, TripLim = rep(TL[i],nrow(tot)), RR = rel)
+    RRdat = rbind(RRdat, tempdat)
+  }
+
+  RRdat$TripLim = as.factor(RRdat$TripLim)
+
+  ggplot(RRdat, aes(x=Year, y = RR, group=TripLim,colour=TripLim))+
+    geom_line()+ facet_wrap(~ State)+
+    ylab("Predicted Release Rate (%)")
+
+}
+
 process_CR_RR = function(dir, Targ=F){ # process catch rate vs release rate
 
-  d4d = as.data.frame(read_xlsx(dir))
+  if(grepl(".csv",dir)){
+    d4d = read.csv(dir)
+  }else{
+    d4d = as.data.frame(read_xlsx(dir))
+  }
 
   dat = data.frame(Year = d4d$YEAR, Month=d4d$month,
                    Mode = d4d$MODE_F,

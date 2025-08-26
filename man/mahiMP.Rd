@@ -12,7 +12,7 @@ mahiMP(
   Smin = NA,
   Smax = NA,
   BL = NA,
-  PRM = 0.85,
+  PRM = 0.25,
   ...
 )
 }
@@ -31,7 +31,7 @@ mahiMP(
 
 \item{BL}{Bag limit (fish retained per trip). Positive integer. Can be a single number (all fleets) or a vector nfleets long (8). Note that predictive models are only available for RecS and HireS in regions FLK and NCFL.}
 
-\item{PRM}{Post Release Mortality (discard mortality). Fraction. Can be a single number or a vector of length nareas (7).}
+\item{PRM}{Post Release Mortality (discard mortality). Fraction. Default from US hook and line estimates of Rudershausen et al 2019 (DOI: 10.1002/nafm.10348). Can be a single number or a vector of length nareas (7).}
 }
 \description{
 A function for emulating status quo mahi management and allowing for a wide range of combined management controls. Fleets (n=8) are: (1) USCom, (2) RecN, (3) RecS, (4) HireN, (5) HireS, (6) Intl, (7) Disc, (8) UnRep. Areas (n = 7) are:  (1) NED, (2) NE, (3) NC, (4) SE, (5) SFL, (6) SAR, (7) CAR.

@@ -1,7 +1,7 @@
 Package: mahiMSE
 Type: Package
 Title: Informing management of U.S. South Atlantic Dolphinfish fisheries
-Version: 0.1.20
+Version: 0.1.21
 Authors@R: c(
     person(
       "Tom", "Carruthers",
