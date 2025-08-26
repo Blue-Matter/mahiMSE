@@ -156,7 +156,7 @@ dat<-data.frame(c("Term","Funding body","Funding stream","Solicitation No.","Con
                    "1305M324P0270, NA",
                    "Blue Matter Science Ltd.",
                    "Tom Carruthers, Adrian Hordyk, Quang Huynh",
-                   "Cassidy Peterson (Matt Damiano)"))
+                   "Cassidy Peterson, (Matt Damiano)"))
 
 kable(dat,"simple",col.names=rep("",2)) 
 
@@ -249,7 +249,7 @@ maketab("./OMs","Operating Model Conditioning")
 
 ## Resources
 
-The Ocean Foundation provides excellent introductory materials on MSE and management procedures (harvest strategies) at their [harvest strategies website](https://harveststrategies.org/)
+The Ocean Foundation provides excellent introductory materials on MSE and management procedures (harvest strategies) at their [harvest strategies website](https://harveststrategies.org/).
 
 The [openMSE website](https://openmse.com/) contains extensive documentation about openMSE and approaches such as RCM. 
 

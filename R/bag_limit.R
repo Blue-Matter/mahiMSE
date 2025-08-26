@@ -3,7 +3,7 @@
 
 process_CR_RR = function(dir, Targ=F){ # process catch rate vs release rate
 
-  d4d = read_xlsx(dir)
+  d4d = as.data.frame(read_xlsx(dir))
 
   dat = data.frame(Year = d4d$YEAR, Month=d4d$month,
                    Mode = d4d$MODE_F,
