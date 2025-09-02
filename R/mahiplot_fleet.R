@@ -29,10 +29,10 @@ mahiplot_area = function(MSE,iqr = 0.8, MPcols = c("red","green","blue","orange"
   yind = rep(1:ny, each=4)
   ylab = CurrentYr + (-ny +1):py
 
-  C = get_cat_area(MSE)/1E6 # s mp, r, time
-  nr = dim(C)[3]
-  Cy = apply(array(C, c(nsim, nMP, nr, nsubyr, ay)),c(1,2,3,5),sum)
-  mus = apply(Cy,2:4,mean)
+  Cp = get_cat_area(MSE)/1E6 # s mp, r, time
+  nr = dim(Cp)[3]
+  Cy = apply(array(Cp, c(nsim, nMP, nr, nsubyr, ay)),c(1,2,3,5),sum)
+  mus = apply(Cy,2:4,mean) # MP, nr, ay
 
   par(mfrow=c(ceiling(nr/2),2),mai=c(0.25,0.35,0.03,0.03),omi=c(0.3,0.3,0.01,0.01))
   for(rr in 1:nr){
