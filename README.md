@@ -1,2 +1,2 @@
 # mahiMSE
-Management Strategy Evaluation for U.S. South Atlantic Dolphinfish
+R Package for MSE of US South Atlantic Dolphinfish

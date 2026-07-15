@@ -1,0 +1,22 @@
+Package: mahiMSE
+Type: Package
+Title: Informing management of U.S. South Atlantic Dolphinfish fisheries
+Version: 1.0.0
+Authors@R: c(
+    person(
+      "Tom", "Carruthers",
+      email = "tom@bluematterscience.com",
+      role = c("aut", "cre")
+    )
+  )
+Description: Tools for the specification of operating models and management procedures for Management Strategy Evaluation (MSE) of U.S. South Atlantic Dolphinfish.
+License: GPL-3
+Encoding: UTF-8
+LazyData: true
+LazyLoad: true
+VignetteBuilder: knitr
+Depends: 
+    openMSE,
+    abind,
+    R (>= 4.1)
+Config/roxygen2/version: 8.0.0
