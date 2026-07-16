@@ -271,7 +271,7 @@ plotatab('docs/tables/Various.xlsx','Fleets')
 
 # Past Data Available
 
-The principle sources of data were seasonal catches by fleet, a spatial VAST index (fitted to fine scale spatial catch and effort data) and catch-length composition data (Table `r (getT())`). 
+The principal sources of data were seasonal catches by fleet, a spatial VAST index (fitted to fine scale spatial catch and effort data) and catch-length composition data (Table `r (getT())`). 
 
 Table `r (Tplus())`. Summary of data available for operating model conditioning. 
 
@@ -390,7 +390,7 @@ plotatab('docs/tables/Various.xlsx','Data_Assump')
 
 Uncertainty in a number of key biological parameters is characterized and later accounted for in operating models. These include maximum growth rate *K*, asymptotic length, instantaneous natural mortality rate *M*, and Beverton-Holt steepness (Table `r (getT())`). 
 
-This approach is a departure from MSE frameworks elsewhere that typically assume point values for such inputs and account for uncertainty in these across a discrete 'grid' of values. The principle reason to avoid this practice is to avoid an unrealistic and indefensible compression of uncertainty when viewing results for a single operating model or across a subset of operating models that hold a particular parameter constant at a point value. This is dicussed in more detail in Section 7 below.  
+This approach is a departure from MSE frameworks elsewhere that typically assume point values for such inputs and account for uncertainty in these across a discrete 'grid' of values. The principal reason to avoid this practice is to avoid an unrealistic and indefensible compression of uncertainty when viewing results for a single operating model or across a subset of operating models that hold a particular parameter constant at a point value. This is dicussed in more detail in Section 7 below.  
 
 Table `r (Tplus())`. Biological parameter inputs. Uncertainty is propagated in critical inputs relating to longevity, growth and resilience.  
 
@@ -452,7 +452,7 @@ Figure `r (plus())`. Molto et al. 2020. Detrended catch rate indices of SSB and 
 
 Stock resilience is determined by both ecology and life-history and is therefore not necessarily informed from similar species elsewhere. However, the approach taken here is to recognize that there is limited stock-specific information and evaluate MP performance over a range of resilience documented for Dolphinfish elsewhere. 
 
-In the eastern Atlantic, Aires da Silva et al. (2021) (cited by Roa-Ureta et al. 2021) assume a Beverton-Holt relationship and assumed the highest possible stock resilience with a steepness value of 1 (no impact of spawning biomass on recruitment). Note that MSY refereece points may not be defined at this extreme level. In the north-western Pacific, Wang et al. (2026) present MSE results for a low-steepness scenario assuming a Beverton-Holt relationship with a steepness value of 0.7.
+In the eastern Atlantic, Aires da Silva et al. (2021) (cited by Roa-Ureta et al. 2021) assume a Beverton-Holt relationship and assumed the highest possible stock resilience with a steepness value of 1 (no impact of spawning biomass on recruitment). Note that MSY reference points may not be defined at this extreme level. In the north-western Pacific, Wang et al. (2026) present MSE results for a low-steepness scenario assuming a Beverton-Holt relationship with a steepness value of 0.7.
 
 
 ## Natural Mortality Rate
@@ -481,7 +481,7 @@ A preliminary Bayesian analysis of conventional tagging data from a study by Mar
 
 Based on these data sets this analysis assumes that *M* is likely in the range of 0.25 and 0.5 per quarter (1.0 - 2.0 per year). Note that higher *M* values are likely to be less consequential for MSE testing as they imply a more productive stock subject to lower current fishing mortality rate (challenges for meeting objectives are generally associated with lower *M* values).
 
-Other MSE frameworks have sought to characterize parameter uncertainty only among operating models of a grid (i.e., two point values of steepness or natural mortality rate. E.g., Atlantic Bluefin Tuna, Southern Bluefin Tuna, North Atlantic Swordfish). There are several potential problems with this approach: Firstly, it dramatically compresses uncertainty among simulations within the same operating model preventing the interpretation of unceratainty for any single operating model or among operating models with the same *M* assumption; Secondly, it precludes post-hoc analysis of the role of natural mortality rate in determining performance for any given operating model; and lastly it is scientifically indefensible assumption within a framework expressly designed to characterize uncertainty. 
+Other MSE frameworks have sought to characterize parameter uncertainty only among operating models of a grid (i.e., two point values of steepness or natural mortality rate. E.g., Atlantic Bluefin Tuna, Southern Bluefin Tuna, North Atlantic Swordfish). There are several potential problems with this approach: Firstly, it dramatically compresses uncertainty among simulations within the same operating model preventing the interpretation of uncertainty for any single operating model or among operating models with the same *M* assumption; Secondly, it precludes post-hoc analysis of the role of natural mortality rate in determining performance for any given operating model; and lastly it is a scientifically indefensible assumption within a framework expressly designed to characterize uncertainty. 
 
 For these reasons, operating models included multiple simulations for which *M* varied around mean values of 0.25 or 0.5 (depending on the *M* factor level) but with a CV of 10%. This 10% CV matches the most precise assumption that has been previously put forward by meta studies of Then et al. (2015) 
 
@@ -499,7 +499,7 @@ In these analyses we assume a rate of 0.25 for PRM. Since it may be altered by m
 
 # Uncertainties
 
-In the workshops of Petersen et al. (2021) stakeholders reported on uncertainties within the Dolphinfish fishery management system that should be incorporated into the MSE exercise. 
+In the workshops of Peterson et al. (2021) stakeholders reported on uncertainties within the Dolphinfish fishery management system that should be incorporated into the MSE exercise. 
 
 The following uncertainties were identified by the meeting participants.
 
@@ -903,10 +903,10 @@ The mahiMP management procedure retains the ability to specify statistical prope
 
 A number of other data inputs to MP have been identified but not yet formalized. These include:
 
-* A Puerto Rico Tournament Index (PLL vulnerble biomass, season 1, area 1).
+* A Puerto Rico Tournament Index (PLL vulnerable biomass, season 1, area 1).
 * The 'Blue Blob' environmental index - above/below average classifier of stock availability (total biomass, over all areas and seasons)
 * The ENSO environmental index - above/below average classifier of stock availability (total biomass over all areas and seasons). 
-* MRIP Recreational Catch Rate Index (not yet available)
+* MRIP Recreational Catch Rate Index (US recreational fleets vulnerable biomass, season 2 & 3, US EEZ areas)
 
 <br>
 <hr>
@@ -1524,34 +1524,34 @@ plotatab('docs/tables/Various.xlsx','Glossary')
 <br>
 <hr>
 
-# Appendix B. Climate Robustness and Ecosystem Considerations
+# Appendix B. Future Robustness and Ecosystem Considerations
 
 ## Introduction
 
-In most fishery management settings there is an impetus to demonstrate that adopted management procedures are responsive and robust to plausible climate impacts. 
+In most fishery management settings there is an impetus to demonstrate that adopted management procedures are responsive and robust to plausible nonstationary impacts. 
 
 A review of papers that describe possible climate impacts on fisheries revealed very few examples where defensible forecasts were available (Carruthers 2024a). In theory, it may be possible to develop an ‘end-to-end’ model that combines sub-models of emissions (e.g., Algieri et al. 2023, Wang et al. 2017), earth systems (Kawamiya et al. 2020), ecosystems (e.g., Beaugrand and Kirby 2018, Lehodey et al. 2010; 2011), behaviour (e.g., Bushnell and Brill 1991, Cayré and Marsac 1993) and physiology (e.g., Gooding et al. 1981, Graham et al. 1989, Checkley et al. 2009). Forecasting fishery impacts would therefore combine a complex series of linked projections that include greenhouse gas emissions (least uncertain), response of climate processes (uncertain), linkages with oceanographic conditions (more uncertain) and the expected impact of those on pelagic communities and individual species (most uncertain). It can be argued that any forecast of climate impacts on fisheries should be seen as firmly hypothetical, and the relative credibility of impact scenarios should be considered highly uncertain. 
 
-This large uncertainty over climate impact scenarios poses a problem for the provision of ‘climate ready’ fishery management advice using the contemporary stock assessment and management strategy evaluation (MSE) frameworks. That is because those frameworks rely on the specification of models that represent climate impacts and the frequency (weighting) of those models could strongly affect the advice provided. For example, it may not be clear whether there will be small or large future changes in natural survival (natural mortality, M). Advice arising from scenarios with large M changes would likely lead to the provision of strongly differing advice from scenarios with small M changes, yet their relative credibility is not easily evaluated. 
+This large uncertainty over future nonstationary impact scenarios poses a problem for the provision of ‘future ready’ fishery management advice using the contemporary stock assessment and management strategy evaluation (MSE) frameworks. That is because those frameworks rely on the specification of models that represent oceanographic impacts and the frequency (weighting) of those models could strongly affect the advice provided. For example, it may not be clear whether there will be small or large future changes in natural survival (natural mortality, M). Advice arising from scenarios with large M changes would likely lead to the provision of strongly differing advice from scenarios with small M changes, yet their relative credibility is not easily evaluated. 
 
 ## A proposal using MSE simulations
 
-Although quantitative forecasts of climate impacts on fisheries may not be available, qualitatively, the way in which climate can impact individual populations is clear. Most papers documenting possible impacts predict changes in recruitment strength (carrying capacity, spawning habitat, larval survival), adult survival (natural mortality rate), somatic growth, spatial distribution (range contraction, catchability) age at maturity and condition factor (fecundity). Additionally, it is generally understood what direction of change in those variables poses a challenge for management procedures: lower recruitment strength, decreased survival, lower somatic growth rate, reduced spatial distribution, older age at maturity and poorer condition factor. 
+Although quantitative forecasts of oceanographic impacts on fisheries may not be available, qualitatively, the way in which nonstationarity can impact individual populations is clear. Most papers documenting possible impacts predict changes in recruitment strength (carrying capacity, spawning habitat, larval survival), adult survival (natural mortality rate), somatic growth, spatial distribution (range contraction, catchability) age at maturity and condition factor (fecundity). Additionally, it is generally understood what direction of change in those variables poses a challenge for management procedures: lower recruitment strength, decreased survival, lower somatic growth rate, reduced spatial distribution, older age at maturity and poorer condition factor. 
 
-One proposed option (Carruthers 2024b) is to shift the focus from model-based tests of climate robustness in favour of performance metrics of climate robustness. Such an approach tests how resilient candidate management procedures are to commonly proposed climate impacts such that their climate robustness can be comparatively evaluated. This shifts the emphasis away from forecasting (we think this climate impact will happen) to the inherent robustness of the candidate management procedures (if this impact occurs, this MP is twice as resilient). 
+One proposed option (Carruthers 2024b) is to shift the focus from model-based tests of future robustness in favour of performance metrics of future robustness. Such an approach tests how resilient candidate management procedures are to commonly proposed environmental impacts such that their future robustness can be comparatively evaluated. This shifts the emphasis away from forecasting (we think this nonstationary impact will happen) to the inherent robustness of the candidate management procedures (if this impact occurs, this MP is twice as resilient). 
 
-## Calculating climate robustness metrics
+## Calculating nonstationary robustness metrics
 
-It is possible to quantify climate robustness with respect to declines in population survival (natural mortality rate M), recruitment strength (R), somatic growth (K) and condition factor (C). To do this MPs are tuned to acheive stable biomass outcomes and then the level of change required to break a threshold is calculated. This then becomes a performance attribute of that management procedure. 
+It is possible to quantify nonstationary robustness with respect to declines in population survival (natural mortality rate M), recruitment strength (R), somatic growth (K) and condition factor (C). To do this MPs are tuned to acheive stable biomass outcomes and then the level of change required to break a threshold is calculated. This then becomes a performance attribute of that management procedure. 
 
 <img src="img/Climate/Method.png" width="650">
 
-Figure `r (plus())`. Calculation of climate robustness metrics. In this example an MP is tuned such that it provides stable SSB over 20 projected years. Given a defined threshold for ‘robust’ as a decline in biomass of more than 30% after 20 projected years, it is possible to calculate the decrease in somatic growth (K) needed to 'break' the MP such that it drops below the threshold. In this case the index target MP allowing for 10% changes in TAC between years (bottom) was more than twice as robust as the derivative allowing for 5% changes (top) (surviving up to an 18% decline in K vs an 8% decline, respectively). 
+Figure `r (plus())`. Calculation of nonstationary robustness metrics. In this example an MP is tuned such that it provides stable SSB over 20 projected years. Given a defined threshold for ‘robust’ as a decline in biomass of more than 30% after 20 projected years, it is possible to calculate the decrease in somatic growth (K) needed to 'break' the MP such that it drops below the threshold. In this case the index target MP allowing for 10% changes in TAC between years (bottom) was more than twice as robust as the derivative allowing for 5% changes (top) (surviving up to an 18% decline in K vs an 8% decline, respectively). 
 
 
-These types of metrics can then be tabulated across MPs (rows) and climate tests (column):
+These types of metrics can then be tabulated across MPs (rows) and nonstationary tests (column):
 
-Table `r (Tplus())`. Example climate performance metrics. Tabulated numbers are the percentage change in each impact before the robustness threshold is reached. Higher percentages that are shaded green represent higher robustness. Shading is scaled per climate test (by column) according to the maximum robustness (highest %) M = increasing natural mortality rate, R = decreasing recruitment strength, K = decreasing somatic growth, C = decreasing condition factor (weight-at-age).
+Table `r (Tplus())`. Example nonstationary performance metrics. Tabulated numbers are the percentage change in each impact before the robustness threshold is reached. Higher percentages that are shaded green represent higher robustness. Shading is scaled per nonstationary test (by column) according to the maximum robustness (highest %) M = increasing natural mortality rate, R = decreasing recruitment strength, K = decreasing somatic growth, C = decreasing condition factor (weight-at-age).
  
  <img src="img/Climate/Results.png" width="400">
 
