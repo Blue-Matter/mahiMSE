@@ -211,3 +211,27 @@ getMSEdims = function(MSElist){
   data.frame(nsim=nsim, nt=nt, np=np, ny=ny, na=na, nf=nf, nl=nl, nr=nr, nMSE = nMSE, nMP = nMP)
 }
 
+Combine = function(Reslist, type="OM"){
+
+  newRes = Reslist[[1]]
+  slots = names(Reslist[[1]])
+  modslots = slots[!slots%in%c("dms","CurrentYear","MPs","OMs","mahiMSE")]
+
+  for(slot in modslots){
+    cat(".")
+    slotlist = lapply(Reslist,function(x,slot)x[[slot]],slot=slot)
+    ndim = length(dim(slotlist[[1]]))
+    if(type == "OM") newRes[[slot]] = abind(slotlist, along = 1)    # OM is always first dimension
+    if(type == "MP") newRes[[slot]] = abind(slotlist, along = ndim) # MP is always last dimension
+  }
+  cat(" \n")
+  if(type == "OM") newRes$dms$nMSE = sum(sapply(Reslist,function(x)x$dms$nMSE))
+  if(type == "MP"){
+    newRes$dms$nMP = sum(sapply(Reslist,function(x)x$dms$nMP))
+    newRes$MPs = unlist(lapply(Reslist,function(x)x$MPs))
+  }
+  cat("new dimensions are: \n")
+  print(newRes$dms)
+  newRes
+}
+
