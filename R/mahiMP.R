@@ -38,6 +38,7 @@
 #' @param Index_beta Boolean vector nI long. Should the beta parameter be estimated in the index - biomass relationship I = qB^beta ? Strongly recommend NO!
 #' @param TL_empirical Should the empirical distribution of catch rates be used to calculate release rate according to trip limits?
 #' @param plot Should plots be produced that explain MP calculations (e.g. HCRs)? Boolean.
+#' @param onlyHCR Should only the HCR be plotted? Boolean.
 #' @param debugfile Character string, a file and directory to write an rds list of internal data e.g. "C:/temp/debug.rds". If 'NA', nothing is written
 #' @param debugts Positive integer greater than number of historical years, the year that debug data are written.
 #' @param debugDatafile Character string, a file and directory to write the Data object to e.g. "C:/temp/debugData.rds". If 'NA', nothing is written

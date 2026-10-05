@@ -55,6 +55,9 @@ getVB = function(x, dms, MPnames, doret=T){
 
 }
 
+getindex = function(MSE){
+  test=lapply(MSE@PPD[[1]][[1]])
+}
 
 mahiResults = function(MSElist, stock = 1, ns = 4, doMSY = T){
 
@@ -101,9 +104,11 @@ mahiResults = function(MSElist, stock = 1, ns = 4, doMSY = T){
 
   cat("Calculating Catch Diff (Cdif) \n")
   # --- Catch diff ----------------------------------------------------------------------------------
-  t1= 1:(dim(Landings_byfleet)[3]-1)
-  t2= 2:dim(Landings_byfleet)[3]
-  CDif = abs((Landings_byfleet[,,t2,,,drop=F]- Landings_byfleet[,,t1,,,drop=F])/ Landings_byfleet[,,t1,,,drop=F])
+  t1 = 1:(dim(Landings_byfleet)[3]-1)
+  t2 = 2:dim(Landings_byfleet)[3]
+  CDif = abs((Landings_byfleet[,,t2,,,drop=F] -
+                Landings_byfleet[,,t1,,,drop=F]) /
+               Landings_byfleet[,,t1,,,drop=F])
   dimnames(CDif) = list(OMnames,paste("sim",1:dms$nsim),ylab[2:nylab],Fleets,names(MSElist[[1]]@MPs))
 
   cat("Calculating Proportion of Landings in each age class Biomass (PropCAA) \n")
