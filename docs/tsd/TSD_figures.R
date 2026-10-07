@@ -4,24 +4,26 @@
 
 library(MSEtool)
 library(mahiMSE)
+library(mvtnorm)
 
 setwd("C:/GitHub/DolphinMSE")
 source("code/OM_new_spatial/dol.input.data.R")
 fit = readRDS("fits/microfit_March_7_2026.rds")
-fleetnames = c("USCom","RecN","RecS","HireN","HireS","Intl","Disc","UnRep")
 
-C_yfr = C_yfr2 = readRDS('data/MK_catch_sep_2025/C_yfr.rds')
-C_yfr[,7:8,] = C_yfr[,7:8,] * 0.5                      # level 1 is half catch
-C_yfr_list = list(C_yfr, C_yfr2); names(C_yfr_list) = c("Cat_0.5", "Cat_1")
-
+C_yfr_h = readRDS("data/Catches_2026/C_yfr_h.rds")
+C_yfr_l = readRDS("data/Catches_2026/C_yfr_l.rds")
+fleetnames = dimnames(C_yfr_h)[[2]]
+C_yfr_list = list(C_yfr_l, C_yfr_h)
+names(C_yfr_list) = c("Low Catch", "High Catch")
 
 
 # ---- F1 Natural Mortality rate --------------------------------------
+
 jpeg('C:/GitHub/mahiMSE/docs/tsd/img/Data/M_stoch.jpg', res=300, height=3.5, width=5, units="in")
 
   par(mai=c(0.9,0.9,0.05,0.05))
   hist(MSEtool::trlnorm(100000,0.25,0.1),xlim=c(0,0.7), border="white",col="lightblue", main="",xlab="Natural Mortality (M) (annual)",ylab="Freq."); grid()
-  hist(MSEtool::trlnorm(100000,0.5,0.1),add=T, col="grey",border='white')
+  hist(MSEtool::trlnorm(100000,0.5,0.05),add=T, col="grey",border='white')
 
 dev.off()
 
@@ -74,7 +76,7 @@ dev.off()
 
 # --- Recreational size data ---
 
-  fInd = 2:5
+fInd = 2:5
 ages = 0:OM@maxage
 MRIP = read.csv("data/Copy of SA_DOLPHIN lengths.csv")
 Kcols = names(MRIP) %in% c("YEAR","month","season","CATCH","RELEASE","HARVEST","tot_len","wgt_ab1")
@@ -86,26 +88,8 @@ Sstates = c("FLORIDA","GEORGIA","SOUTH CAROLINA","NORTH CAROLINA")
 Nstates =  c("VIRGINIA", "DELAWARE","MARYLAND","NEW JERSEY","NEW YORK","CONNECTICUT","RHODE ISLAND","MASSACHUSETTS")
 States = list(Nstates, Sstates, Nstates, Sstates)
 
-doCAL = function(sdat,OM,size_bins,syr = 1986){
-  ns = length(size_bins)
-  nt = OM@nyears
-  ts = rep(NA,nrow(sdat))
-  fCAL = array(0,c(nt,ns-1))
-  for(i in 1:nrow(sdat)){
-    if(sdat$month[i] == 12){
-      yind = sdat$YEAR[i]-syr+1
-    }else{
-      yind = sdat$YEAR[i]-syr
-    }
-    sind = match(sdat$season[i],c("Winter","Spring","Summer","Autumn"))
-    ts[i] = yind*4+sind-1
-    lind = (1:(ns-1))[sdat$tot_len[i] <= size_bins[2:ns] & sdat$tot_len[i] > size_bins[1:(ns-1)]]
-    fCAL[ts[i],lind] =  fCAL[ts[i],lind]+1
-  }
-  fCAL
-}
 
-jpeg('man/img/Data/Rec_WL.jpg', res=300, height=8.5, width=5.5, units="in")
+jpeg('C:/GitHub/mahiMSE/docs/tsd/img/Data/Rec_WL.jpg', res=300, height=8.5, width=5.5, units="in")
 
   par(mfrow=c(4,2),mai=c(0.4,0.4,0.01,0.01),omi=c(0.3,0.3,0.01,0.01))
   for(i in 1:length(Modes)){
@@ -118,7 +102,7 @@ jpeg('man/img/Data/Rec_WL.jpg', res=300, height=8.5, width=5.5, units="in")
     keep = keeprat > (2/3) & keeprat < (3/2)
     sdat = sdat[keep,]
     points(sdat$tot_len,sdat$wgt_ab1,col="#0000ff90",pch=19); lines(La,Wa,col="red")
-    CAL[,,fInd[i]] = doCAL(sdat,OM,size_bins,syr=syr)
+    #CAL[,,fInd[i]] = doCAL(sdat,OM,size_bins,syr=syr)
     hist(sdat$tot_len,main="",breaks = size_bins[1:15])
 
   }
@@ -182,16 +166,16 @@ dev.off()
 # ---- Annual Catches ----------------------------------------------------------
 
 # worm
-colnames(annual.landings) = fleetnames
-cols = c("black","red","red","green","green","blue", "orange","purple")
-lty = c(1,1,3,1,3,1,1,3)
-omlab = c("Catch level 1: 50% Disc and UnRep", "Catch level 2: 100% Disc and UnRep")
 
-jpeg('man/img/Data/Annual_landings.jpg', res=300, height=6, width=12, units="in")
+cols = c("black","red","red","green","green","blue")
+lty = c(1,1,3,1,3,1,1,3)
+omlab = c("Low catch scenario", "High catch scenario")
+
+jpeg('C:/GitHub/mahiMSE/docs/tsd/img/Data/Annual_landings.jpg', res=300, height=6, width=12, units="in")
   par(mfrow=c(1,2),mai=c(0.35,0.85,0.45,0.05),omi=c(0.4,0.05,0.05,0.05))
   for(om in 1:2){
-    ql = apply(C_yfr_list[[om]],1:2,sum)/1000
-    al = apply(array(ql,c(4,148/4,8)),2:3,sum)
+    ql = apply(C_yfr_list[[om]],1:2,sum,na.rm=T)/1000
+    al = apply(array(ql,c(4,148/4,8)),2:3,sum,na.rm=T)
     matplot(year_start:year_end,al,type="l",
             col=cols,lty=lty,lwd=2, ylab="Landings (mt)",
             xlab =""); grid()
@@ -206,41 +190,44 @@ dev.off()
 
 # bar
 
-cols = c("black","red","red","green","green","blue", "orange","purple")
+cols = c("black","red","red","green","green","blue")
 lty = c(1,1,3,1,3,1,1,3)
 
 
-jpeg('tsd/img/Data/Landings_bar_2022.jpg', res=300, height=8, width=15, units="in")
+jpeg('C:/GitHub/mahiMSE/docs/tsd/img/Data/Landings_bar_2022.jpg', res=300, height=12, width=13, units="in")
 
-  cols = c("black","red","red","green","green","blue", "orange","purple")
+  cols = c("black","red","red","green","green","blue")
+  par(mfcol=c(2,2),mai=c(0.75,0.85,0.01,0.85),omi=c(0.05,0.05,0.35,0.05))
 
   tind = 145:148
-  CT = C_yfr_list[[2]]
-  par(mfrow=c(1,2),mai=c(0.85,0.85,0.45,0.85),omi=c(0.05,0.05,0.05,0.05))
+  for(om in 1:2){
+    CT = C_yfr_list[[om]]
 
-  CTf = apply(CT[tind,,],2,sum)/1E6
-  barplot(CTf, ylab="Catch in 2022 (kt)",xlab="Fleet",col=cols,ylim=c(0,max(CTf)*1.1));grid()
-  CTfp = CTf / sum(CTf)*100
-  rat = max(CTfp)/max(CTf)
-  percs = pretty(seq(0,max(CTfp),length.out=8))
-  abline(h = percs/rat,col="light blue")
-  barplot(CTf, add=T, col=cols)
-  axis(4,at=percs/rat,percs)
-  mtext("Percentage of total catches",4,line=1.8)
-  text(((1:8)-0.45)*1.2,CTfp/rat+0.1,paste0(round(CTfp,1),"%"),cex=0.9)
+    CTf = apply(CT[tind,,],2,sum,na.rm=T)/1E6
+    barplot(CTf, ylab="Catch in 2022 (kt)",xlab="Fleet",col=cols,ylim=c(0,max(CTf)*1.1));grid()
+    CTfp = CTf / sum(CTf)*100
+    rat = max(CTfp)/max(CTf)
+    percs = pretty(seq(0,max(CTfp),length.out=8))
+    abline(h = percs/rat,col="light blue")
+    barplot(CTf, add=T, col=cols)
+    axis(4,at=percs/rat,percs)
+    mtext("Percentage of total catches",4,line=1.8)
+    text(((1:8)-0.45)*1.2,CTfp/rat+0.1,paste0(round(CTfp,1),"%"),cex=0.9)
+    mtext(omlab[om],line=0.3,font=2)
+
+    CTr = apply(CT[tind,,],3,sum,na.rm=T)/1E6
+    barplot(CTr, ylab="Catch in 2022 (kt)",xlab="Area",ylim=c(0,max(CTr)*1.1));grid()
+    CTrp = CTr / sum(CTr)*100
+    rat = max(CTrp)/max(CTr)
+    percs = pretty(seq(0,max(CTrp),length.out=8))
+    abline(h = percs/rat,col="light blue")
+    barplot(CTr, add=T)
+    axis(4,at=percs/rat,percs)
+    mtext("Percentage of total catches",4,line=1.8)
+    text(((1:5)-0.45)*1.2,CTrp/rat+0.15,paste0(round(CTrp,1),"%"),cex=0.9)
 
 
-  CTr = apply(CT[tind,,],3,sum)/1E6
-  barplot(CTr, ylab="Catch in 2022 (kt)",xlab="Area",ylim=c(0,max(CTr)*1.1));grid()
-  CTrp = CTr / sum(CTr)*100
-  rat = max(CTrp)/max(CTr)
-  percs = pretty(seq(0,max(CTrp),length.out=8))
-  abline(h = percs/rat,col="light blue")
-  barplot(CTr, add=T)
-  axis(4,at=percs/rat,percs)
-  mtext("Percentage of total catches",4,line=1.8)
-  text(((1:5)-0.45)*1.2,CTrp/rat+0.15,paste0(round(CTrp,1),"%"),cex=0.9)
-
+  }
 
 dev.off()
 
@@ -248,7 +235,7 @@ dev.off()
 # Equilibrium Catches
 jpeg('C:/GitHub/mahiMSE/docs/tsd/img/Data/EqCat.jpg', res=300, height=8, width=9, units="in")
 
-  Ct = apply(C_yfr_list[[2]],1:2,sum)/1000
+  Ct = apply(C_yfr_list[[2]],1:2,sum,na.rm=T)/1000
   incl = 1:14
   padding = 1
   tpad = hTime_steps[1] - (1:padding)/4
@@ -258,14 +245,14 @@ jpeg('C:/GitHub/mahiMSE/docs/tsd/img/Data/EqCat.jpg', res=300, height=8, width=9
 
   par(mai=c(0.85,0.85,0.45,0.85),omi=c(0.05,0.05,0.05,0.05))
 
-  cols = c("black","red","red","green","green","blue", "orange","purple")
+  cols = c("black","red","red","green","green","blue")
   lty = c(1,1,3,1,3,1,1,3)
   matplot(lab,dat,type="l",lty=lty,col=cols,xlab = "Initial Years", ylab="Catch (t)",ylim=c(0,2000));grid()
 
   yno = 2
   matplot(hTime_steps[1:(yno*4)],Ct[1:(yno*4),], type="p",pch=19,col=cols,add=T)
 
-  muC = apply(Ct[1:(yno*4),],2,mean)
+  muC = apply(Ct[1:(yno*4),],2,mean,na.rm=T)
   xmarkers = hTime_steps[c(1,yno*4)]+c(-0.125,0.125)
   abline(v=xmarkers,lwd=2,col="#99999990",lty=2)
 
@@ -285,9 +272,9 @@ byfleet = apply(CAL[,,fleets],2:3,sum)
 binmax = 1350
 keep = bins<=binmax
 
-jpeg('man/img/Data/CAL.jpg', res=300, height=5, width=7, units="in")
+jpeg('C:/GitHub/mahiMSE/docs/tsd/img/Data/CAL.jpg', res=300, height=12, width=7, units="in")
 
-  par(mfrow =c(floor(nf/2),ceiling(nf/2)),mai=c(0.3,0.3,0.25,0.05),omi=c(0.25,0.25,0.02,0.02))
+  par(mfrow =c(nf,1),mai=c(0.3,0.3,0.25,0.05),omi=c(0.25,0.25,0.02,0.02))
   for(i in 1:nf){
     barplot(byfleet[keep,i],names.arg =bins[keep],col="white",border=NA); grid()
     barplot(byfleet[keep,i],names.arg =bins[keep],col="slategrey",border=NA,add=T)
@@ -300,7 +287,70 @@ dev.off()
 
 
 
-# ---- Total index -------------------------------------------------------------
+
+
+# ==== GLM ===================================================================================
+
+# ---- GLM Total index -------------------------------------------------------------
+
+xs = 1986 + 0:(nrow(oGLM)-1)/4
+all = oGLM[,6]
+cols = c("red","green","blue","purple")
+
+jpeg('C:/GitHub/mahiMSE/docs/tsd/img/Data/GLM_Total_index.jpg', res=300, height=4.5, width=7, units="in")
+  par(mai=c(0.8,0.8,0.05,0.05))
+  plot(xs,all,type='l',col="grey",ylim=c(0,max(all,na.rm=T)*1.025),xlab="Year",ylab="VAST total index");grid()
+
+  points(xs,all,pch=19,col=cols)
+  legend('topright',c("Wint","Spr","Sum","Aut"),text.col=cols,bty="n")
+dev.off()
+
+
+# ----- GLM Spatial indices --------------------------------------------------------
+
+Areas = c("CAR+FLK", "NCA",  "NCFL", "NED", "NNC+VBM")
+xs = 1986 + 0:(nrow(oGLM)-1)/4
+cols = c("red","green","blue","purple")
+jpeg('C:/GitHub/mahiMSE/docs/tsd/img/Data/GLM_Area_index.jpg', res=300, height=7.5, width=7, units="in")
+  par(mfrow=c(3,2),mai=c(0.4,0.3,0.25,0.05),omi=c(0.35,0.35,0.01,0.01))
+
+  for(rr in 1:length(Areas)){
+    all = oGLM[,rr]
+    plot(xs,all,type='l',col="grey",ylim=c(0,max(all,na.rm=T)*1.025),xlab="",ylab="");grid()
+    mtext(Areas[rr],line=0.2)
+    points(xs,all,pch=19,col=cols)
+  }
+
+  plot(1,1,col='white',axes=F,xlab="",ylab="",main="")
+  legend('center',c("Wint","Spr","Sum","Aut"),text.col=cols)
+  mtext("GLM Spatial Index (m)",2,line=0.9,outer=T)
+  mtext("Year",1,line=0.4,outer=T)
+dev.off()
+
+
+maxy = 22
+Areas = c("CAR+FLK", "NCA",  "NCFL", "NED", "NNC+VBM")
+xs = 1986 + 0:(nrow(oGLM)-1)/4
+cols = c("red","green","blue","purple")
+jpeg('C:/GitHub/mahiMSE/docs/tsd/img/Data/GLM_Area_index_no_scaled.jpg', res=300, height=7.5, width=7, units="in")
+  par(mfrow=c(3,2),mai=c(0.4,0.3,0.25,0.05),omi=c(0.35,0.35,0.01,0.01))
+
+  for(rr in 1:length(Areas)){
+    all = oGLM[,rr]
+    plot(xs,all,type='l',col="grey",ylim=c(0,maxy),xlab="",ylab="");grid()
+    mtext(Areas[rr],line=0.2)
+    points(xs,all,pch=19,col=cols)
+  }
+
+  plot(1,1,col='white',axes=F,xlab="",ylab="",main="")
+  legend('center',c("Wint","Spr","Sum","Aut"),text.col=cols)
+  mtext("GLM Spatial Index (m)",2,line=0.9,outer=T)
+  mtext("Year",1,line=0.4,outer=T)
+dev.off()
+
+# ==== VAST ===================================================================================
+
+# ---- VAST Total index -------------------------------------------------------------
 
 #xs = rep(1986:2022,each=4)+c(0,0.25,0.5, 0.75)
 #all = as.vector(d$ALL)
@@ -312,15 +362,15 @@ ts =tot$Year
 all = tot$value
 
 jpeg('tsd/img/Data/Total_index.jpg', res=300, height=4.5, width=7, units="in")
-  par(mai=c(0.8,0.8,0.05,0.05))
-  plot(xs,all,type='l',col="grey",ylim=c(0,max(all,na.rm=T)*1.025),xlab="Year",ylab="VAST total index");grid()
-  cols = c("red","green","blue","purple")
-  points(xs,all,pch=19,col=cols)
-  legend('topright',c("Wint","Spr","Sum","Aut"),text.col=cols,bty="n")
+par(mai=c(0.8,0.8,0.05,0.05))
+plot(xs,all,type='l',col="grey",ylim=c(0,max(all,na.rm=T)*1.025),xlab="Year",ylab="VAST total index");grid()
+cols = c("red","green","blue","purple")
+points(xs,all,pch=19,col=cols)
+legend('topright',c("Wint","Spr","Sum","Aut"),text.col=cols,bty="n")
 dev.off()
 
 
-# ----- Spatial indices --------------------------------------------------------
+# ----- VAST Spatial indices --------------------------------------------------------
 
 unique(oVAST$STRATA)
 Areas = c("CAR+FLK", "NCA",  "NCFL", "NED", "NNC+VBM")

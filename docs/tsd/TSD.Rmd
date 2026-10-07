@@ -22,7 +22,7 @@ output:
   pdf_document:
     toc: yes
     fig_caption: true
-subtitle: Performance metrics, operating models, management procedures and diagnostics (v1.1)  
+subtitle: Performance metrics, operating models, management procedures and diagnostics (v1.2, post CIE peer-review)  
 vignette: |
   %\VignetteIndexEntry{ABT-MSE} %\VignetteEngine{knitr::rmarkdown} %\VignetteEncoding{UTF-8}
 ---
@@ -255,7 +255,7 @@ Figure `r (plus())`. Seasonal spatial distribution predicted by the VAST model i
 
 ## Fleet Definitions
 
-Exploitation was characterized by eight fleets that were selected as the most concise basis for capturing varying fishery selectivty and also providing detail required to reflect regional, multi-sector fishing interests (Table `r (getF())`). 
+Exploitation was characterized by six fleets that were selected as the most concise basis for capturing varying fishery selectivty and also providing detail required to reflect regional, multi-sector fishing interests (Table `r (getF())`). Following peer-review of the MSE framework, dead discards are now rolled into the USA Commercial fleet and Unreported catches are rolled into the International fleet. 
 
 
 Table `r (Tplus())`. Individual fleets used to partition data for operating model conditioning and projection of fishing dynamics.  
@@ -271,7 +271,7 @@ plotatab('docs/tables/Various.xlsx','Fleets')
 
 # Past Data Available
 
-The principal sources of data were seasonal catches by fleet, a spatial VAST index (fitted to fine scale spatial catch and effort data) and catch-length composition data (Table `r (getT())`). 
+The principal sources of data were seasonal catches by fleet, a spatial VAST index (fitted to fine scale spatial catch and effort data based on the U.S. pelagic longline data), an alternative spatial GLM index (fitted to the same fine scale data) and catch-length composition data (Table `r (getT())`). 
 
 Table `r (Tplus())`. Summary of data available for operating model conditioning. 
 
@@ -301,18 +301,15 @@ Figure `r (plus())`. Landings by fleet and area in 2022 (the final year of the o
 
 <br>
 
-Table `r (Tplus())`. Percentage of catches by fishing fleet for all historical years (base assumption of 100% catches of Discard and Unreported fleets).  
+Table `r (Tplus())`. Low catch scenario: Percentage of catches by fishing fleet for all historical years (base assumption of 100% catches of Discard and Unreported fleets).  
 
+```{r SeasonalCatch1, eval=T,echo=F}
 
-```{r SeasonalCatch, eval=T,echo=F}
+C_yfr_list = list(C_yfr_l, C_yfr_h); names(C_yfr_list) = c("Low catch scenario", "High catch scenario")
 
-C_yfr2 = C_yfr
-C_yfr[,7:8,] = C_yfr[,7:8,] * 0.5                      # level 1 is half catch
-C_yfr_list = list(C_yfr, C_yfr2); names(C_yfr_list) = c("Cat_0.5", "Cat_1")
-
-C_tf = apply(C_yfr_list[[2]],1:2,sum)/1000
-qf = apply(array(C_tf,c(4,148/4,8)),c(1,3),sum)
-seas.matp = round(qf/sum(qf)*100,1)
+C_tf = apply(C_yfr_list[[1]],1:2,sum,na.rm=T)/1000
+qf = apply(array(C_tf,c(4,148/4,6)),c(1,3),sum,na.rm=T)
+seas.matp = round(qf/sum(qf,na.rm=T)*100,1)
 
 fleets = dimnames(C_tf)[[2]]
 colnames(seas.matp) = fleets
@@ -320,12 +317,27 @@ rownames(seas.matp) = c("Winter","Spring","Summer","Autumn")
 kable(seas.matp )
 ```
 
-Table `r (Tplus())`. Percentage of catches by fishing fleet for the last historical 3 years (2020 - 2022) (base assumption of 100% catches of Discard and Unreported fleets).  
+Table `r (Tplus())`. High catch scenario: Percentage of catches by fishing fleet for all historical years (base assumption of 100% catches of Discard and Unreported fleets).  
+
+```{r SeasonalCatch2, eval=T,echo=F}
+
+C_tf = apply(C_yfr_list[[2]],1:2,sum,na.rm=T)/1000
+qf = apply(array(C_tf,c(4,148/4,6)),c(1,3),sum,na.rm=T)
+seas.matp = round(qf/sum(qf,na.rm=T)*100,1)
+
+fleets = dimnames(C_tf)[[2]]
+colnames(seas.matp) = fleets
+rownames(seas.matp) = c("Winter","Spring","Summer","Autumn")
+kable(seas.matp )
+```
+
+
+
+Table `r (Tplus())`. Low catch scenario: Percentage of catches by fishing fleet for the last historical 3 years (2020 - 2022) (base assumption of 100% catches of Discard and Unreported fleets).  
 
 ```{r SeasonalCatch10, eval=T,echo=F}
-
-C_tf = apply(C_yfr_list[[2]],1:2,sum)/1000
-qf = apply(array(C_tf,c(4,148/4,8))[,35:37,],c(1,3),sum)
+C_tf = apply(C_yfr_list[[1]],1:2,sum,na.rm=T)/1000
+qf = apply(array(C_tf,c(4,148/4,6))[,35:37,],c(1,3),sum, na.rm=T)
 seas.matp = round(qf/sum(qf)*100,1)
 #seas.matp = as.matrix(round(seas.mat*100,0))
 colnames(seas.matp) = fleets
@@ -335,7 +347,10 @@ kable(seas.matp )
 
 <br>
 
+
 ## Abundance Indices
+
+### VAST Index 
 
 Spatially aggregated operating models were conditioned on the total abundance index derived from the VAST spatial distribution model of [Damiano et al. (2024)](https://spo.nmfs.noaa.gov/sites/default/files/pdf-content/fish-bull/12212_03_Damiano_508.pdf) but with results summarized by a more concise 5-area definition described above. The VAST index shows considerable variability in abundance among seasons with spring and summer abundance often twice that of the Autumn and Winter (Figure `r (getF())`). This suggests high overall mortality within year. 
 
@@ -357,6 +372,49 @@ Figure `r (plus())`. The spatial, seasonal VAST index (5 area summary of the VAS
 <img src="img/Data/Area_index_not_scaled.jpg" width="500">
 
 Figure `r (plus())`. The spatial, seasonal VAST index with consistent y-axis range to demonstrate scale differences (5 area summary of the VAST model outputs of Damiano et al. 2024). 
+
+
+### GLM Index
+
+Similarly to the VAST approach, operating models were fitted to the total (spatially aggregated) relative abundance index arising from a Generalized Linear Model (GLM) (Karnauskas 2026). Subsequently, seasonal structure was imposed on the model. The GLM index differs significantly from the VAST index placing a smaller fraction of fish in the CAR+FLK area and a lower minimum fraction in areas such as NCFL. 
+
+To account for temporal, spatial, and operational factors influencing catch rates, catch per unit effort (CPUE; defined as total dolphin caught per 1,000 hooks) from the pelagic longline (PLL) fishery (1986–2022) was standardized using a two-stage Delta-lognormal Generalized Linear Model (GLM) approach. Prior to model fitting, records with missing coordinate/date information, zero hooks set, or set configurations where total catch exceeded hooks set were removed.
+
+The Delta-lognormal model models presence-absence and positive catch rates separately:
+
+Probability of Catch (Binomial Component): The presence/absence of dolphin catch (p) was modeled using a GLM with a binomial error distribution and a logit link function:
+
+logit(p)=Year+AreaSeason+TempBin+DepBin+TSWO+TMIX+TDOL
+
+where AreaSeason represents the interaction between spatial fishing area and season (Winter, Spring, Summer, Fall; adjusted for December sets assigned to the following calendar year), TempBin and DepBin represent categorical binned sea temperature and gear depth, respectively, and TSWO, TMIX, and TDOL are binary indicators representing specific target species strategies (swordfish, mixed, and dolphin targeting, respectively).
+
+Positive Catch Rate (Lognormal Component): For non-zero catches (CPUE>0), log-transformed CPUE was modeled using a Gaussian GLM with an identity link:
+
+(CPUE)=Year+AreaSeason+TempBin+DepBin+TSWO+TMIX+TDOL
+
+Model deviance explained was evaluated via analysis of deviance and model diagnostics (residual uniformity and dispersion) were assessed using simulated randomized quantile residuals in the DHARMa package. A number of alternative model formulations were explored, including different combinations of predictor variables as well as a single-stage Generalized Linear Mixed Model assuming a Tweedie distribution with a log link (with Year modeled as a random effect). These alternative models all yielded very similar end results. A final model for use in the predictions was selected based on the amount of deviance explained.  
+
+For the Delta-lognormal model, relative standardized annual index values were calculated as the product of the back-transformed estimated marginal means from both model components, multiplying the predicted probability of positive catch by the predicted positive CPUE rate for each year, season and area combination. Standard errors for the combined index were calculated using the delta method accounting for the covariance between sub-models. All analyses were conducted in R using packages glmmTMB, emmeans, and DHARMa. 
+
+
+
+<img src="img/Data/GLM_Total_index.jpg" width="400">
+
+Figure `r (plus())`. The spatially aggregated (total), seasonal GLM index (5-area of Karnauskas 2026). 
+
+
+The fitted VAST models provide seasonal estimation of regional biomass for determining seasonal movement matrices.
+
+
+<img src="img/Data/GLM_Area_index.jpg" width="500">
+
+Figure `r (plus())`. The spatial, seasonal GLM index (5 area GLM model outputs of Karnauskas 2026). 
+
+
+<img src="img/Data/GLM_Area_index_not_scaled.jpg" width="500">
+
+Figure `r (plus())`. The spatial, seasonal GLM index with consistent y-axis range to demonstrate scale differences (5 area GLM model outputs of Karnauskas 2026).
+
 
 
 ## Length Composition of Catches
