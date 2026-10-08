@@ -284,11 +284,13 @@ plotatab('docs/tables/Various.xlsx','PastData')
 
 ## Catches
 
-Arguably the largest historical shift in catches has been a reduction in recreational fishing in the Caribbean and South Florida region (RecS in CAR+FLK) from highs of near 10kt in the 90's to around 3kt in 2022. During that time international catches have more than tripled from 1.5kt to 5.5kt. In 2022 63% of all Dolphin catches were from International, discard and unreported fishing activities (Figure `r (getF())`). 
+To account for considerable uncertaining in the magnitude of international removals, including unreported catch and discards, two catch data sets were developed: a low scenario and high scenario for international landings. 
 
-Of the remaining 37%, the large majority of catches were by the southern recreational fleet (RecS) (26% of the total catches, 70% of the catch of US fleet). The U.S. commercial fleet catches were less than 1% of the total removals in 2022. The large majority of mahi catches were taken in the Caribbean and Southern Florida region (CAR+FLK) (75%).
+Arguably the largest historical shift in catches has been the gradual increase in recreational fishing in the Caribbean and South Florida region (RecS in CAR+FLK) from 1kt in the 90's to around 2.5kt in recent years. From 1985 to 2010, international catches approximately tripled from 2kt to 6kt (low catch scenario), or doubled from 4kt to 8kt (high catch scenario) after which they subsequently declined to 2.5kt (low catch scenario) or 6kt (high catch scenario) in 2022. In 2022, International catches were either 45% (low catch scenario) or 68% (high catch scenario) (Figure `r (getF())`). 
 
-Operating models are conditioned on season- and fleet-specific catch data from `r floor(min(Time_steps))` to `r ceiling(max(Time_steps))`. To account for uncertainty in discards and unreported fishing, operating models were conditioned on 50% and 100% of NOAA estimates for these fleets (See section 'Reference Grid Operating Models', below) 
+Of the remaining catches (after international removals), the large majority (76%) were taken by the southern recreational fleet (RecS). The U.S. commercial fleet catches were between 1.6% (low catch scenario) and 0.9% (high catch scenario) of the total removals in 2022. The large majority of mahi catches were taken in the Caribbean and Southern Florida region (CAR+FLK) (65.7% in the low catch scenario, 79.7% in the high catch scenario).
+
+Operating models are conditioned on season- and fleet-specific catch data from `r floor(min(Time_steps))` to `r ceiling(max(Time_steps))`.  
 
 
 <img src="img/Data/Annual_landings.jpg" width="500">
