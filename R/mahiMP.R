@@ -80,6 +80,8 @@ mahiMP = function(Data,
                   debugts = 152,
                   debugDatafile = NA,
                   docheck = FALSE,
+                  NinterimTS = 16,
+                  InterimCatch =
                   ...){
 
   # ARGS:
@@ -96,16 +98,22 @@ mahiMP = function(Data,
                       Index_lag, Index_seed, Index_beta, season, plot=plot)
 
   ad = new('advice')                                                 # Make new Advice object
-  ad = do_TAC(Data, TAC, rel_TAC, season, ad)                        # Add TAC info if applicable [55]
-  ad = do_TAE(Data, TAE, rel_TAE, season, ad)                        # Add TAE info if applicable [29]
-  ad = do_PRM(Data, PRM, ad)                                         # Adds the post release mortality [1]
-  ad = do_size(Data, SLmin, SLmax, ad)                               # Adds any specified size limits [2]
-  ad = do_TL(Data, TL,  plot, TL_empirical, season, ad)              # Apply any bag limits where there are data BL_info [13]
-  ad = do_HCR(Data, HCR_use, HCR_ICP, HCR_LCP, HCR_fleet, HCR_sens,  # Harvest control rule comes last as it adds dynamic rules [762]
-              HCR_lever, HCR_up_max, HCR_down_max, HCR_input,
-              HCR_smooth, Sim_Ind, plot = plot, onlyHCR = onlyHCR,
-              season = season, ad)
-  # ad = do_interim()                                                # Interim (post conditioning, pre MP) data
+
+  if((max(Data@Years)+1) %in%row.names(Interim_Catches)){                    # Interim advice
+    iTAC = Interim_Catches[match(max(Data@Years)+1,row.names(Interim_Catches)),1:5]
+    iTAC[6] = NA
+    ad = do_TAC(Data, TAC = iTAC, rel_TAC, season, ad)
+  }else{
+    ad = do_TAC(Data, TAC, rel_TAC, season, ad)                        # Add TAC info if applicable [55]
+    ad = do_TAE(Data, TAE, rel_TAE, season, ad)                        # Add TAE info if applicable [29]
+    ad = do_PRM(Data, PRM, ad)                                         # Adds the post release mortality [1]
+    ad = do_size(Data, SLmin, SLmax, ad)                               # Adds any specified size limits [2]
+    ad = do_TL(Data, TL,  plot, TL_empirical, season, ad)              # Apply any bag limits where there are data BL_info [13]
+    ad = do_HCR(Data, HCR_use, HCR_ICP, HCR_LCP, HCR_fleet, HCR_sens,  # Harvest control rule comes last as it adds dynamic rules [762]
+                HCR_lever, HCR_up_max, HCR_down_max, HCR_input,
+                HCR_smooth, Sim_Ind, plot = plot, onlyHCR = onlyHCR,
+                season = season, ad)
+  }
 
   if(plot) plot_mahi_ad(ad)                                          # Plots internal calculations (smoothing, TL, HCR)
 
