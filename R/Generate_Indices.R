@@ -25,14 +25,13 @@ getBeta = function(Iobs, Ipred, betamin = -1, betamax = 1, nbeta = 100){
 
 # Data = Example_Data_3; Index_number = 1; Index_cv = rep(NA,4); Index_ac = rep(NA,4); Index_lag = c(1,2,1,2); Index_seed = rep(1,4); Index_beta = c(F,F,F,F); return_stats=F
 
-gen_ind_2 = function(Data, Index_names, Index_cv, Index_ac, Index_lag, Index_seed, Index_beta, plot=T, plot_ts = 100, refyrs = 4, return_stats=F){
+gen_ind_2 = function(Data, Index_names, Index_cv, Index_ac, Index_lag, Index_seed, Index_beta, season, plot=T, plot_ts = 100, refyrs = 4, return_stats=F){
 
   if(!is.na(Index_names[1])){ # only if indices are needed
     # Get season and pertinent MSE dimensions
-    season = get_season(Data)
     lhy = match(Data@YearLH, Data@Years) # last historical time step
-    FDeadArea = Data@Misc$DataOM@FDeadArea$Dolphinfish[1,,lhy,,]
-    na = dim(FDeadArea)[1]; nf = dim(FDeadArea)[2]; nr = dim(FDeadArea)[3]
+    #FDeadArea = Data@Misc$DataOM@FDeadArea$Dolphinfish[1,,lhy,,]
+    na = nAge(Data); nf = nFleet(Data); nr = nArea(Data)
     N = Data@Misc$DataOM@Number$Dolphinfish[1,,,]
     nt = dim(N)[2]  # Total time steps (historical and projected)
     lhobs = length(Data@Years) # last observation
@@ -62,8 +61,10 @@ gen_ind_2 = function(Data, Index_names, Index_cv, Index_ac, Index_lag, Index_see
         sel = Data@Misc$DataOM@OM@Fleet[[1]][[ft]]@Selectivity@MeanAtAge[1,,,] # age, ts, area
         wta = Data@Misc$DataOM@OM@Stock$Dolphinfish@Weight@MeanAtAge[1,,]      # age, ts
         I_area_vec = rep(0,nr); I_area_vec[IArea[[ii]]] = 1
-        VBA = N * array(sel, c(na, nt, nr)) * array(rep(I_area_vec, each = na * nt), c(na, nt, nr)) * array(wta, c(na, nt, nr))
-        var = apply(VBA,2, sum) / 1E6
+        #VBA = N * array(sel[,1:nt,], c(na, nt, nr)) * array(rep(I_area_vec, each = na * nt), c(na, nt, nr)) * array(wta[,1:nt], c(na, nt, nr))
+        #var = apply(VBA,2, sum) / 1E6
+        ar  <- IArea[[ii]]
+        var <- colSums(rowSums(N[,,ar,drop=FALSE] * sel[,1:nt,ar,drop=FALSE], dims = 2) * wta[,1:nt]) / 1e6
       }
 
       # Statistics
@@ -189,122 +190,7 @@ gen_ind_2 = function(Data, Index_names, Index_cv, Index_ac, Index_lag, Index_see
       return(sIndices)
     }
   } # end of 'only if Index_number != NA
-}
-
-
-# Data = Example_Data_3; Index_type = c("VB1","SSB", "VAST"); Index_cv = c(0.01, 0.1, 0.4); Index_ac = c(0, 0.95, 0.95); Index_lag = c(1,2,3); Index_nt = c(4,8,4); Index_seed = rep(1,3); refyrs = 3
-gen_ind = function(Data, Index_names, Index_cv, Index_ac, Index_lag, Index_nt, Index_seed, plot=T, plot_ts = 100, refyrs = 4){
-
-  season = get_season(Data)
-  nI = length(Index_names)
-  N = Data@Misc$DataOM@Number$Dolphinfish[1,,,]
-  nt = dim(N)[2]
-  OMno = getOMno(Data@Misc$DataOM@OM@Name)
-  lhrec = N[1, match(Data@YearLH,Data@Years),1] # rec in last historical year for area 1 used for random seeding
-  lhobs = length(Data@Years)
-  lhy = match(Data@YearLH, Data@Years)
-
-  FDeadArea = Data@Misc$DataOM@FDeadArea$Dolphinfish[1,,lhy,,]
-  for(i in 1:(refyrs-1)) FDeadArea = FDeadArea + Data@Misc$DataOM@FDeadArea$Dolphinfish[[lhy-i]]
-  na = dim(FDeadArea)[1]; nf = dim(FDeadArea)[2]; nr = dim(FDeadArea)[3]
-
-  Indices = list()
-
-  for(ii in 1:nI){
-
-    # Get the index to the current year - 1
-    if(Index_type[ii] == "VAST"){
-
-      ind = Data@Survey@Value[,1]
-
-      if(!is.na(Index_cv[ii]) | !is.na(Index_ac[ii])){ # if user specified stats properties
-
-        wta = Data@Misc$DataOM@OM@Stock$Dolphinfish@Weight@MeanAtAge
-        VBA = N * array(wta, c(na, nt, nr))
-        var = apply(VBA, 2, sum) / 1E6
-        hvar = var[1:lhy]
-        muvar = mean(hvar)
-        hind = ind[1:lhy] # historical VAST observations
-        muind = mean(hind)
-        res = log(hind/muind)-log(hvar/mean(hvar))
-        df = MSEtool:::Calc_Stats(res)
-        if(!is.na(Index_cv[ii]))df$SD = Index_cv[ii]
-        if(!is.na(Index_ac[ii]))df$AC = Index_ac[ii]
-        set.seed(lhrec+Index_seed[ii]+OMno) # future simulations differ according to simulation and can be shared among Indices (for testing rules with same data)
-        perr = MSEtool:::Gen_Residuals(df, 1, lhobs-lhy)[1,]
-        pvar = var[(lhy+1):lhobs] / muvar * muind
-        ind = c(hind,pvar*perr)# Joined
-      }
-
-    }else if(grepl("sVAST",Index_type[ii])){ # Area-based vast index
-
-      rr = as.integer(strsplit(Index_type[ii],"sVAST")[[1]][2]) # area
-      wta = Data@Misc$DataOM@OM@Stock$Dolphinfish@Weight@MeanAtAge
-      VBA = N * array(wta, c(na, nt, nr))
-      var = apply(VBA[,,rr], 2, sum) / 1E6
-      hvar = var[1:lhy]
-      muvar = mean(hvar)
-      hind = sVAST[,rr]
-      muind = mean(hind)
-      res = log(hind/muind)-log(hvar/mean(hvar))
-      df = MSEtool:::Calc_Stats(res)
-      if(!is.na(Index_cv[ii]))df$SD = Index_cv[ii]
-      if(!is.na(Index_ac[ii]))df$AC = Index_ac[ii]
-      set.seed(lhrec+Index_seed[ii]+OMno) # future simulations differ according to simulation and can be shared among Indices (for testing rules with same data)
-      perr = MSEtool:::Gen_Residuals(df, 1, lhobs-lhy)[1,]
-      pvar = var[(lhy+1):lhobs] / muvar * muind
-      ind = c(hind,pvar*perr)# Joined
-
-    }else{
-
-      if(Index_type[ii] == "B")   var = Data@Misc$DataOM@Biomass[1,1,] /1E6
-      if(Index_type[ii] == "SSB") var = Data@Misc$DataOM@SBiomass[1,1,]/1E6
-      if(grepl("VB",Index_type[ii])){
-        ft = as.integer(strsplit(Index_type[ii],"VB")[[1]][2])
-        sel = Data@Misc$DataOM@OM@Fleet[[1]][[ft]]@Selectivity@MeanAtAge[1,,,] # age, ts, area
-        wta = Data@Misc$DataOM@OM@Stock$Dolphinfish@Weight@MeanAtAge[1,,]      # age, ts
-        F_area_last = as.integer(FDeadArea[na,ft,]>1E-2) # what areas are fished by this fleet?
-        VBA = N * array(sel, c(na, nt, nr)) * array(rep(F_area_last, each = na * nt), c(na, nt, nr)) * array(wta, c(na, nt, nr))
-        var = apply(VBA,2, sum) / 1E6
-        hvar = var[1:lhy]
-        muvar = mean(hvar)
-        hind = ind[1:lhy] # historical VAST observations
-        muind = mean(hind)
-        res = log(hind/muind)-log(hvar/mean(hvar))
-        df = MSEtool:::Calc_Stats(res)
-      }
-
-      # Calc errors
-      # Historical errors
-      set.seed(OMno) # historical errors are the same for all simulations of OM (ie real observations)
-      df = data.frame(SD=Index_cv[ii], AC=Index_ac[ii], lst.err=0)
-      herr = MSEtool:::Gen_Residuals(df, 1, lhy)[1,]
-      # Projected errors
-      df$lst.err = log(herr[lhy])
-      set.seed(lhrec+Index_seed[ii]+OMno) # future simulations differ according to simulation and can be shared among Indices (for testing rules with same data)
-      perr = MSEtool:::Gen_Residuals(df, 1, nt-lhy)[1,]
-      # Joined
-      ind = (var * c(herr, perr))[1:lhobs]
-
-    }
-
-    # apply lag to final available index
-    Indices[[ii]] = ind[1:mapseason_lastyear(Data, season, ns=4, lag=Index_lag[ii])]
-
-  }
-
-
-  if(plot){
-    # par(mfrow=c(ceiling(nI/2),2),mai=c(0.8,0.8,0.5,0.1))
-
-    for(ii in 1:nI){
-      ts_ind = (nYear(Data@Misc$DataOM@OM) - (plot_ts-1)):length(Indices[[ii]])
-      plot(Time_steps[ts_ind],Indices[[ii]][ts_ind],pch=19,xlab="Time step",ylab=Index_type[ii],ylim=c(0,max(Indices[[ii]])*1.05)); grid()
-      abline(v=lhy+0.5,col="red")
-      mtext(paste0("Index Sim. (",ii,") CV = ", Index_cv[ii], " AC = ", Index_ac[ii]),cex=0.9,line=0.3, font=2)
-    }
-  }
-
-  Indices
 
 }
+
+

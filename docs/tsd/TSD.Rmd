@@ -22,7 +22,7 @@ output:
   pdf_document:
     toc: yes
     fig_caption: true
-subtitle: Performance metrics, operating models, management procedures and diagnostics (v1.2, post CIE peer-review)  
+subtitle: Performance metrics, operating models, management procedures and diagnostics (v1.2, post CIE peer-review in July 2026)  
 vignette: |
   %\VignetteIndexEntry{ABT-MSE} %\VignetteEngine{knitr::rmarkdown} %\VignetteEncoding{UTF-8}
 ---
@@ -148,7 +148,15 @@ plotatab <- function(filey,sheet,head=T){
 
 # About This Document
 
+## Purpose 
+
 A trial specifications document (TSD) is intended to provide a  description of an MSE framework that is sufficiently detailed to ensure reproducibility. This description includes data sources, management performance metrics, operating models, operating model dynamics, operating model conditioning, management procedures, management procedure tunings and exceptional circumstances protocols. 
+
+## July 2026 CIE Peer-Review
+
+The MSE framework was subject to peer-review in July 2026. This updated TSD reflects the recommendations of the reviewers. The approach to OM conditioning, MP implementation and performance presentation passed peer-review but there were a number of recommendations for changes to inputs to the MSE framework. Most notably adding a wider range of non-US catches and an alternative spatial index to the reference grid of operating models. 
+
+The report of that meeting (SEDAR 104) that includes recommended changes is available [here](https://sedarweb.org/assessments/sedar-104-dolphin-management-strategy-evaluation).  
 
 
 <br>
@@ -413,7 +421,7 @@ The fitted VAST models provide seasonal estimation of regional biomass for deter
 Figure `r (plus())`. The spatial, seasonal GLM index (5 area GLM model outputs of Karnauskas 2026). 
 
 
-<img src="img/Data/GLM_Area_index_not_scaled.jpg" width="500">
+<img src="img/Data/GLM_Area_index_no_scaled.jpg" width="500">
 
 Figure `r (plus())`. The spatial, seasonal GLM index with consistent y-axis range to demonstrate scale differences (5 area GLM model outputs of Karnauskas 2026).
 
@@ -423,9 +431,9 @@ Figure `r (plus())`. The spatial, seasonal GLM index with consistent y-axis rang
 
 Fishing fleets retain fish of varying sizes. RecS, HireN and HireS fleets have comparable catch-length distributions with the majority of fish in the range of 400 - 1000mm with a mode around 550mm (Figure `r (getF())`) (note that the HireN and RecN fleets have relatively few length observations). The USCom fleet catches larger fish from 700 - 1200mm with a mode around 950mm. The RecN fleet catches a wider range of lengths. 
 
-<img src="img/Data/CAL.jpg" width="520">
+<img src="img/Data/CAL.jpg" width="420">
 
-Figure `r (plus())`. Aggregate (across years) length composition data for the catches of those fleets for which these data are available. 
+Figure `r (plus())`. Aggregate (across years) length composition data for the catches of those fleets for which these data are available (the international fleet -fleet 6- is assumed to follow US Commercial selectivity). 
 
 
 
@@ -729,24 +737,28 @@ $$ v \sim N(0, 5) $$
 
 This approach was able to characterize the historical predictions of the VAST model relatively well (Figure `r (getF())`) given varying specification of target viscosity $V$ (Figures `r (getF())` and `r (getF(2))`). 
 
-<img src="img/Movement/dolphin_fit_40.jpg" width="500">
+<img src="img/Movement/GLM_fit_90.jpg" width="500">
 
-Figure `r (plus())`. Fit of the markov movement matrix to a series of example transitions with a user-specified target viscosity of 40 per cent. The red numbers at the top of each panel are the estimated gravity terms *g*. The purple numbers are the estimated probability of staying. Note that these may or may not match the target (a prior) specified due to the fraction that remains in the area between time steps. 
+Figure `r (plus())`. Fit of the markov movement matrix to the GLM index for a selection of recent years given a user-specified target viscosity of 90 per cent. The red numbers at the top of each panel are the estimated gravity terms *g*. The purple numbers are the estimated probability of staying. Note that these may or may not match the target (a prior) specified due to the fraction that remains in the area between time steps. 
 
 
 
-<img src="img/Movement/dolphin_fit_60.jpg" width="500">
+<img src="img/Movement/VAST_fit_90.jpg" width="500">
 
-Figure `r (plus())`. Fit of the markov movement matrix to a series of example transitions with a user-specified target viscosity of 60 per cent.
+Figure `r (plus())`. Fit of the markov movement matrix to the VAST index for a selection of recent years given a user-specified target viscosity of 60 per cent.
 
 
 In order to account for historical uncertainty in movement, $g$ and $v$ parameters were drawn from a multivariate normal distribution with the variance-covariance matrix calculated from the nlminb model fit (inverse Hessian matrix). 
 
 For projection years, in order to preserve historical patterns of seasonality, individual years (sets of 4 seasonal movements) were sampled at random with replacement to construct the projected movements (Figure `r (getF())`). 
 
-<img src="img/Movement/dolphin_fit_simulation_40.jpg" width="560">
+<img src="img/Movement/GLM_bysim_90.jpg" width="560">
 
-Figure `r (plus())`. The historical and projected simulation of seasonal-spatial distribution with a user-specified target viscosity of 40 per cent.  
+Figure `r (plus())`. The historical and projected simulation of seasonal-spatial distribution of the GLM index given a user-specified target viscosity of 90 per cent.  
+
+<img src="img/Movement/VAST_bysim_90.jpg" width="560">
+
+Figure `r (plus())`. The historical and projected simulation of seasonal-spatial distribution of the VAST index given a user-specified target viscosity of 90 per cent.  
 
 
 

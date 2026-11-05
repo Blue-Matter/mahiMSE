@@ -14,9 +14,9 @@
 fakeMP = function(Data, repyr = 2023, outdir = "C:/GitHub/DolphinMSE/MP_design", filenam = "Example_Data", Eff=0.5){
 
   ad=Advice(Effort=Eff)
-  if(max(Data@Years)==repyr){
+  if(max(Data@Years)==(repyr-1)){
     Example_Data = Data
-    outfile =  paste0(outdir,"/",filenam,".rds")
+    outfile =  paste0(outdir,"/",filenam,"_",Data@Misc$Sim,".rds")
     saveRDS(Example_Data, outfile)
     cat(paste0("Example data file with data in year ",repyr, " outputted to: ",outfile, "\n"))
     stop()
@@ -35,6 +35,18 @@ class(fakeMP) = "mp"
 get_season = function(Data){
   rep(1:4,1000)[max(Data@Years)-Data@YearLH+1] # This is the season following the data of this season - so one time step ahead and the correct index for TAC and Effort distribution
 }
+
+
+#' MP helper function - what season is it?
+#'
+#' @param Data An MSEtool object of class 'Data'
+#' @author T. Carruthers
+#' @export
+get_season_lag1 = function(Data){
+  rep(1:4,1000)[max(Data@Years)-Data@YearLH] # This is the season following the data of this season - so one time step ahead and the correct index for TAC and Effort distribution
+}
+
+
 
 #' A basic effort MP for testing
 #'

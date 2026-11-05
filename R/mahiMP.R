@@ -21,7 +21,7 @@
 #' @param TL Trip limit (fish retained per trip). Positive integer. Can be a single number (all fleets) or a vector nfleets long (8). Note that predictive models are only available for RecS and HireS in regions CAR+FLK and NCFL.
 #' @param PRM Post Release Mortality (discard mortality). List nfleet long of either a Fraction (all length classes) or a vector nlengths long. Default from US hook and line estimates of Rudershausen et al 2019 (DOI: 10.1002/nafm.10348). Can be a single number or a vector of length nareas (7).
 #' @param HCR_use Boolean vector nHCR long. Should HCR(s) be used?  If False, all other HCR arguments will be ignored.
-#' @param HCR_ICP List (nHCR long) of 2 - position vectors. The Index control points. These are a pair of x-axis control points for a hockey-stick control rule. Phrased in terms of the levels of the index (HCR_input) over the HCR_calib years.
+#' @param HCR_ICP List (nHCR long) of 2 - position vectors. The Index control points. These are a pair of x-axis control points for a hockey-stick control rule. Phrased in terms of the levels of the index (HCR_input).
 #' @param HCR_LCP  List (nHCR long) of 2 - position vectors. Management Lever control points. These are a pair of y-axis control points for a hockey-stick control rule. Phrased in terms of the levels of the Lever (HCR_lever) over the last historical year (see objects rTAC & rEffort).
 #' @param HCR_fleet The fleet for which the HCR is used. Vector of positive integers nHCR long. If NA this sets advice for all fleets combined based on the HCR_input specified.
 #' @param HCR_sens Sensitivity of the response. A vector of positive real numbers nHCR long. A value of 1 is proportional.
@@ -49,14 +49,15 @@
 #' @export
 mahiMP = function(Data,
                   TAC = NA,
-                  rel_TAC = 1,
+                  rel_TAC = NA,
                   TAE = NA,
                   rel_TAE = 1,
-                  SLmin = c(0,    0,    500,  0,    500,  0,    0,    0),
-                  SLmax = c(1E4,  1E4,  1E4,  1E4,  1E4,  1E4,  1E4,  1E4),
-                  TL =    c(NA,   54,   54,   54,   54,   NA,   NA,   NA),
-                  PRM =  list(0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25),
-                  HCR_use = F,
+
+                  SLmin = c(0,    0,    500,  0,    500,  0),
+                  SLmax = c(1E4,  1E4,  1E4,  1E4,  1E4,  1E4),
+                  TL =    c(NA,   54,   54,   54,   54,   NA),
+                  PRM =  list(0.25, 0.25, 0.25, 0.25, 0.25, 0.25),
+                  HCR_use = FALSE,
                   HCR_ICP = NA,
                   HCR_LCP = NA,
                   HCR_fleet = list(NA),
@@ -71,39 +72,39 @@ mahiMP = function(Data,
                   Index_ac = NA,
                   Index_lag = 1,
                   Index_seed = 1,
-                  Index_beta = F,
-                  TL_empirical = T,
-                  plot = F,
-                  onlyHCR = F,
+                  Index_beta = FALSE,
+                  TL_empirical = TRUE,
+                  plot = FALSE,
+                  onlyHCR = FALSE,
                   debugfile = NA,
                   debugts = 152,
                   debugDatafile = NA,
-                  docheck = F,
+                  docheck = FALSE,
                   ...){
 
   # ARGS:
-  #   Data = Example_Data_2; TAC = NA; rel_TAC = NA; TAE = NA; rel_TAE = 1;  SLmin = c(0,    0,    500,  0,    500,  0,    0,    0);  SLmax = c(1E4,  1E4,  1E4,  1E4,  1E4,  1E4,  1E4,  1E4)
-  #   TL =    c(NA,   54,   54,   54,   54,   NA,   NA,   NA);  PRM =  list(0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25)
-  #   HCR_use = F; Index_names = "PLL";  Index_cv = NA;  Index_ac = NA;  Index_lag = 1; Index_seed = 1; Index_beta = F; TL_empirical = T; plot =T
+  #   Data = readRDS("C:/GitHub/DolphinMSE/MP_design/Example_Data_0.rds")[[1]]
+  #   Data = Example_Data_2; TAC = NA; rel_TAC = NA; TAE = NA; rel_TAE = 1;  SLmin = c(0,    0,    500,  0,    500,  0);  SLmax = c(1E4,  1E4,  1E4,  1E4,  1E4,  1E4)
+  #   TL =    c(NA,   54,   54,   54,   54,   NA);  PRM =  list(0.25, 0.25, 0.25, 0.25, 0.25, 0.25)
+  #   HCR_use = F; Index_names = "PLL";  Index_cv = NA;  Index_ac = NA;  Index_lag = 1; Index_seed = 1; Index_beta = F; TL_empirical = T; plot =T; onlyHCR=FALSE
   #   debugfile = NA; debugts = 158; debugDatafile = NA; docheck = F
 
-
   mahiMPcheck(docheck, Data, TAC, TAE, SLmin, SLmax, TL)             # Check dimensions and specs [0]
+  season = get_season(Data)                                         # Get season (this time step, not last with data) [14]
 
   Sim_Ind = gen_ind_2(Data, Index_names, Index_cv, Index_ac,         # Generate abundance indices [2]
-                      Index_lag, Index_seed, Index_beta, plot=plot)
-
-  season = get_season(Data)                                          # Get season (this time step, not last with data) [14]
+                      Index_lag, Index_seed, Index_beta, season, plot=plot)
 
   ad = new('advice')                                                 # Make new Advice object
   ad = do_TAC(Data, TAC, rel_TAC, season, ad)                        # Add TAC info if applicable [55]
   ad = do_TAE(Data, TAE, rel_TAE, season, ad)                        # Add TAE info if applicable [29]
   ad = do_PRM(Data, PRM, ad)                                         # Adds the post release mortality [1]
   ad = do_size(Data, SLmin, SLmax, ad)                               # Adds any specified size limits [2]
-  ad = do_TL(Data, TL,  plot, TL_empirical, ad)                      # Apply any bag limits where there are data BL_info [13]
+  ad = do_TL(Data, TL,  plot, TL_empirical, season, ad)              # Apply any bag limits where there are data BL_info [13]
   ad = do_HCR(Data, HCR_use, HCR_ICP, HCR_LCP, HCR_fleet, HCR_sens,  # Harvest control rule comes last as it adds dynamic rules [762]
               HCR_lever, HCR_up_max, HCR_down_max, HCR_input,
-              HCR_smooth, Sim_Ind, plot = plot, onlyHCR = onlyHCR, ad)
+              HCR_smooth, Sim_Ind, plot = plot, onlyHCR = onlyHCR,
+              season = season, ad)
   # ad = do_interim()                                                # Interim (post conditioning, pre MP) data
 
   if(plot) plot_mahi_ad(ad)                                          # Plots internal calculations (smoothing, TL, HCR)

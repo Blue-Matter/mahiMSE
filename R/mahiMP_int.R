@@ -61,21 +61,19 @@ do_TAE = function(Data, TAE, rel_TAE, season, ad, nyrs=3, ns=4){
   if(!is.na(TAE[1])){  # Absolute effort (can be total, by fleet, by fleet x area)
    ad@Effort = TAE
   }
-  if(!is.na(rel_TAE[1])) {
+  if(any(!is.na(rel_TAE))) {
     takets = match(Data@YearLH, Data@Years) - (nyrs * ns -1):0
     Effort = Data@Misc$DataOM@Effort[1,takets,]
     nf = dim(Effort)[2]
     muEffort = apply(array(Effort,c(ns,nyrs,nf)),c(1,3),mean)
 
-    #refyrs = match(Data@YearLH, Data@Years)-3:0
-    #ts = refyrs[season]  #  pick from last four historical seasons
     histEff = muEffort[season,] #Data@Misc$DataOM@Effort[1,ts,] #Data@Effort@Value[ts,]
     newEffort <- histEff*rel_TAE
 
     Dist = Data@Misc$DataOM@Distribution[1,takets,,]
     nr = dim(Dist)[3]
     muDist = apply(array(Dist,c(ns,nyrs,nf,nr)),c(1,3,4),mean)
-    #EffortFleetArea <- newEffort* Data@Misc$DataOM@Distribution[1,ts,,]
+
     EffortFleetArea <- newEffort * muDist[season,,]
     ad@Effort = EffortFleetArea
   }
@@ -83,14 +81,14 @@ do_TAE = function(Data, TAE, rel_TAE, season, ad, nyrs=3, ns=4){
 }
 
 do_TAC = function(Data, TAC, rel_TAC, season, ad){
-  unlimitedTAC = 1E10
+  #unlimitedTAC = 1E10
   ad@TACType = "Removals"
   if(any(!is.na(TAC))){ # works with both total TAC and TAC by fleet
     sTAC =  aperm(rTAC,c(2,1,3))
     TACfrac = sTAC/apply(sTAC,1,sum)
     tempTAC = apply(TAC * TACfrac[,season,],1,sum) # fleet specific TAC summed over areas
-    tempTAC[is.na(tempTAC)] = unlimitedTAC
-    ad@TAC
+    #tempTAC[is.na(tempTAC)] = unlimitedTAC
+    ad@TAC = tempTAC
   }
   if(!is.na(rel_TAC[1])){
     ad@TAC = rel_TAC * apply(rTAC[season,,],1,sum) # relTAC can be total, by fleet, by fleet x season
@@ -125,7 +123,6 @@ do_size = function(Data, SLmin, SLmax, ad){
   ad@Retention = retlist
   ad
 }
-
 
 
 

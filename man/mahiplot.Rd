@@ -5,7 +5,7 @@
 \title{Plot overall yield and biomass projections across MPs}
 \usage{
 mahiplot(
-  MSEobj,
+  MR,
   MPs = 1:2,
   annual = T,
   ns = 4,
@@ -14,13 +14,16 @@ mahiplot(
   npy = 20,
   MPnams = NA,
   leg = T,
+  dorange = T,
   addn = F,
   addmed = T,
-  addl = F
+  addl = F,
+  firstyr = 2005,
+  lastyr = 2042
 )
 }
 \arguments{
-\item{MSEobj}{A class of object 'MSE'}
+\item{MR}{A class of object 'mahiResults' made by the function mahiResults(MSElist)}
 
 \item{MPs}{An integer vector of MPs to plot}
 
@@ -34,6 +37,8 @@ mahiplot(
 
 \item{leg}{Boolean, add a legend for the MPs?}
 
+\item{dorange}{Boolean, add the quantile ranges?}
+
 \item{addn}{Boolean, add narrow interquartile range shading?}
 
 \item{addmed}{Boolean, add a line for the median?}
@@ -46,7 +51,7 @@ mahiplot(
 Plot overall yield and biomass projections across MPs
 }
 \examples{
-mahiplot(myMSE)
+mahiplot(mahiResults(myMSE))
 }
 \author{
 T. Carruthers

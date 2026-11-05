@@ -7,31 +7,36 @@
 mahiMP(
   Data,
   TAC = NA,
-  rel_TAC = NA,
+  rel_TAC = 1,
   TAE = NA,
   rel_TAE = 1,
-  SLmin = c(0, 0, 500, 0, 500, 0, 0, 0),
-  SLmax = c(10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000),
-  TL = c(NA, 54, 54, 54, 54, NA, NA, NA),
-  PRM = list(0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25),
+  SLmin = c(0, 0, 500, 0, 500, 0),
+  SLmax = c(10000, 10000, 10000, 10000, 10000, 10000),
+  TL = c(NA, 54, 54, 54, 54, NA),
+  PRM = list(0.25, 0.25, 0.25, 0.25, 0.25, 0.25),
   HCR_use = F,
   HCR_ICP = NA,
   HCR_LCP = NA,
-  HCR_calib = 145:148,
   HCR_fleet = list(NA),
   HCR_sens = 1,
   HCR_lever = "TAC",
   HCR_up_max = 0.5,
   HCR_down_max = 0.5,
   HCR_input = 1,
-  HCR_smooth = NA,
-  Index_type = "VAST",
+  HCR_smooth = 0.3,
+  Index_names = NA,
   Index_cv = NA,
   Index_ac = NA,
   Index_lag = 1,
   Index_seed = 1,
+  Index_beta = F,
   TL_empirical = T,
   plot = F,
+  onlyHCR = F,
+  debugfile = NA,
+  debugts = 152,
+  debugDatafile = NA,
+  docheck = F,
   ...
 )
 }
@@ -54,13 +59,11 @@ mahiMP(
 
 \item{PRM}{Post Release Mortality (discard mortality). List nfleet long of either a Fraction (all length classes) or a vector nlengths long. Default from US hook and line estimates of Rudershausen et al 2019 (DOI: 10.1002/nafm.10348). Can be a single number or a vector of length nareas (7).}
 
-\item{HCR_use}{Should HCR(s) be used? Boolean. If False, all other HCR arguments will be ignored.}
+\item{HCR_use}{Boolean vector nHCR long. Should HCR(s) be used?  If False, all other HCR arguments will be ignored.}
 
-\item{HCR_ICP}{Index control points. These are a pair of x-axis control points for a hockey-stick control rule. Phrased in terms of the levels of the index (HCR_input) over the HCR_calib years.}
+\item{HCR_ICP}{List (nHCR long) of 2 - position vectors. The Index control points. These are a pair of x-axis control points for a hockey-stick control rule. Phrased in terms of the levels of the index (HCR_input) over the HCR_calib years.}
 
-\item{HCR_LCP}{Management Lever control points. These are a pair of y-axis control points for a hockey-stick control rule. Phrased in terms of the levels of the Lever (HCR_lever) over the HCR_calib years.}
-
-\item{HCR_calib}{The calibration years used - which historical time period is used? Vector of integer time steps.}
+\item{HCR_LCP}{List (nHCR long) of 2 - position vectors. Management Lever control points. These are a pair of y-axis control points for a hockey-stick control rule. Phrased in terms of the levels of the Lever (HCR_lever) over the last historical year (see objects rTAC & rEffort).}
 
 \item{HCR_fleet}{The fleet for which the HCR is used. Vector of positive integers nHCR long. If NA this sets advice for all fleets combined based on the HCR_input specified.}
 
@@ -72,23 +75,35 @@ mahiMP(
 
 \item{HCR_down_max}{The maximum rate of advice decrease. Positive fraction. E.g. 0.8 is a maximum management decreate of 80 per cent.}
 
-\item{HCR_input}{The indices used in the harvest control rule. A list of integer vectors, nHCR long. E.g., HCR_input = list(2:3, c(1,3)) uses indices 1 and 2 for the first HCR, indices 1 and 3 for the second HCR}
+\item{HCR_input}{The indices used in the harvest control rule. Vector of integers, nHCR long. E.g., HCR_input = c(2, 1) uses index 2 for the first HCR, index 1 for the second HCR}
 
 \item{HCR_smooth}{The effective number of parameters of a polynomial smoother applied to the input indices. Defaults to NA - raw data. A value of 0.1 means that there will be length(Index)*0.1 number of smoothing parameters. Hence, higher values are less smoothing. This parameterization keeps smoothing consistent as the length of the time series increases in projections.}
 
-\item{Index_type}{The origin of the index. Character string nIndex long. Can be biomass ("B"), spawning stock biomass ("SSB"), vulnerable biomass of fleet 1 ("VB1"), vulnerable biomass of fleet 2 ("VB2"), etc.}
+\item{Index_names}{Vector of character vectors nIndex long. The indices to be generated. See object 'Indices'. The indices simulated. e.g. c("PLL", "PR_Tourn")}
 
-\item{Index_cv}{The coefficient of variation of the index (CV). Vector of positive real numbers nIndex long.}
+\item{Index_cv}{Vector of positive real numbers nIndex long. User override for the coefficient of variation of the index (CV). NA means stat properties are estimated from model fit}
 
-\item{Index_ac}{The lag-1 autocorrelation of the index. (Generally positive) Vector of fractions nIndex long.}
+\item{Index_ac}{Vector of fractions nIndex long. User override for the The lag-1 autocorrelation of the index. (Generally positive). NA means stat properties are estimated from model fit}
 
-\item{Index_lag}{The number of years of data lag. Vector of integers, nIndex long. 1 is a single year.}
+\item{Index_lag}{Vector of integers, nIndex long. The number of years of data lag. 1 is a single year.}
 
-\item{Index_seed}{Real number, a random number seed for generating index observation errors nIndex long}
+\item{Index_seed}{Real number vector nI long. A random number seed for generating index observation errors nIndex long}
+
+\item{Index_beta}{Boolean vector nI long. Should the beta parameter be estimated in the index - biomass relationship I = qB^beta ? Strongly recommend NO!}
 
 \item{TL_empirical}{Should the empirical distribution of catch rates be used to calculate release rate according to trip limits?}
 
 \item{plot}{Should plots be produced that explain MP calculations (e.g. HCRs)? Boolean.}
+
+\item{onlyHCR}{Should only the HCR be plotted? Boolean.}
+
+\item{debugfile}{Character string, a file and directory to write an rds list of internal data e.g. "C:/temp/debug.rds". If 'NA', nothing is written}
+
+\item{debugts}{Positive integer greater than number of historical years, the year that debug data are written.}
+
+\item{debugDatafile}{Character string, a file and directory to write the Data object to e.g. "C:/temp/debugData.rds". If 'NA', nothing is written}
+
+\item{docheck}{Conduct an internal test of consistency among MP arguments}
 }
 \description{
 A function for emulating status quo mahi management and allowing for a wide range of combined management controls. Fleets (n=8) are: (1) USCom, (2) RecN, (3) RecS, (4) HireN, (5) HireS, (6) Intl, (7) Disc, (8) UnRep. Areas (n = 5) are:  (1) "CAR+FLK", (2) "NCA", (3) "NCFL", (4) "NED", (5) "NNC+VBM"

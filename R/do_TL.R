@@ -1,4 +1,4 @@
-do_TL = function(Data, TL, plot=F, TL_empirical, ad, ref_ts = 20, nseasons = 4){ # ref_ts is the last 5 years of data used to characterize CR distributions in 6_Dolphin_MP_prereq.R
+do_TL = function(Data, TL, plot=F, TL_empirical, season, ad, ref_ts = 20, nseasons = 4){ # ref_ts is the last 5 years of data used to characterize CR distributions in 6_Dolphin_MP_prereq.R
 
   if(any(!is.na(TL))){ # only if something has to be calculated
 
@@ -7,7 +7,6 @@ do_TL = function(Data, TL, plot=F, TL_empirical, ad, ref_ts = 20, nseasons = 4){
     #Retention_list = rep(list(Ret0),nFleet(Data)) #
     Retention_list = ad@Retention
 
-    season = get_season(Data)
     find = (1:length(TL))[!is.na(TL)]
     refind = (match(Data@YearLH, Data@Years)-((ref_ts-1):0))[rep(1:nseasons,ref_ts/nseasons)==season] # the correct season time step over last ref_ts timesteps
     dat_ts = length(Data@Years)
@@ -16,19 +15,20 @@ do_TL = function(Data, TL, plot=F, TL_empirical, ad, ref_ts = 20, nseasons = 4){
     ret = list()
     j = 0
 
+    VB = N = Data@Misc$DataOM@Number$Dolphinfish[1,,,] # nage, nts, narea
+    Wtage = Data@Misc$DataOM@OM@Stock$Dolphinfish@Weight@MeanAtAge[1,,] # age, nts
+
     for(ff in find){
 
-      VB = N = Data@Misc$DataOM@Number$Dolphinfish[1,,,] # nage, nts, narea
-      Wtage = Data@Misc$DataOM@OM@Stock$Dolphinfish@Weight@MeanAtAge[1,,] # age, nts
       Selage = Data@Misc$DataOM@OM@Fleet[[1]][[ff]]@Selectivity@MeanAtAge[1,,,] # age, nts
       Nind = MSEtool:::TEG(dim(N))
-      VB[Nind] = N[Nind] * Wtage[Nind[,1:2]] * Wtage[Nind[,1:2]]
+      VB[Nind] = N[Nind] * Wtage[Nind[,1:2]]  * Selage[Nind[,1:2]]
       VBr = apply(VB,2:3,sum)
       areas = (1:narea)[apply(C_yfr[refind,ff,],2,sum)>0]
 
       for(rr in areas){
         j=j+1
-        VBratio = VBr[dat_ts+1,rr] / mean(VBr[refind,rr])
+        VBratio = VBr[dat_ts,rr] / mean(VBr[refind,rr])
         if(TL_empirical) retval = calc_ret_emp(VBratio, season, ff, rr, TL[ff], plot = plot)
         if(!TL_empirical) retval = calc_ret_fit(VBratio, season, ff, rr, TL[ff], plot=plot)
         ret[[j]] = c(season=season,ff=ff,rr=rr,retval=retval)
@@ -98,7 +98,7 @@ calc_ret_fit=function(VBratio, season, ff, rr, TLff, maxCR=100, plot=F){
   if(any(ind)){ # only carry on if bag limit data are available
     TLind = (1:nTLdat)[ind]
     size = TL_info$fitsize[[TLind]]
-    mu = TL_info$fitsize[[TLind]] * VBratio
+    mu = TL_info$mu[[TLind]] * VBratio
     CRs = CRsbl = 1:maxCR
     dens = dnbinom(CRs,size=size, mu=mu)
     totdens = sum(CRs * dens) # assuming all is kept

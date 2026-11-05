@@ -2,13 +2,12 @@
 # HCR_fleet = list(c(1,6)); HCR_sens = c(1,0.5); HCR_lever = c("TAC", "TAE");
 # HCR_up_max = c(0.2,0.1); HCR_down_max = c(0.2,0.2); HCR_input = c(1,2); plot=T; onlyHCR = F
 do_HCR = function(Data, HCR_use, HCR_ICP, HCR_LCP, HCR_fleet, HCR_sens, HCR_lever,
-                  HCR_up_max, HCR_down_max, HCR_input,  HCR_smooth, Sim_Ind, plot, onlyHCR, ad){
+                  HCR_up_max, HCR_down_max, HCR_input,  HCR_smooth, Sim_Ind, plot, onlyHCR, season, ad){
 
   # Notes:
   # Relative TAC level (relative to 2022) goes in in Data@Misc$rel_lev_vals and out in ad@Misc$rel_lev_vals (for determining acceptible rate of change)
 
   d = get_dims(Data); nt = d$nt; na = d$na; nf = d$nf; nr = d$nr
-  season = get_season(Data)
 
   if(any(HCR_use)){
 
@@ -18,10 +17,11 @@ do_HCR = function(Data, HCR_use, HCR_ICP, HCR_LCP, HCR_fleet, HCR_sens, HCR_leve
       if(!is.null(ad@TAC))TAC=ad@TAC
     }
 
-    if("TAE" %in% HCR_lever){
-      TAE = rep(NA,d$nf)
-      if(!is.null(ad@Effort))TAE=ad@Effort
-    }
+
+    #if("TAE" %in% HCR_lever){
+     # TAE = rep(NA,d$nf)
+      #if(!is.null(ad@Effort))TAE=ad@Effort
+    #}
 
     nHCR = length(HCR_fleet)
     #oldAdvice = Data@Advice # advice from previous year including Data@Misc@rel_lev_vals
@@ -80,7 +80,7 @@ do_HCR = function(Data, HCR_use, HCR_ICP, HCR_LCP, HCR_fleet, HCR_sens, HCR_leve
     }} #  HCR use loop / HCR loop
 
     if("TAC" %in% HCR_lever){
-      TAC[is.na(TAC)] = 1E9 # 1 mil tons (unrestricted)
+      #TAC[is.na(TAC)] = 1E9 # 1 mil tons (unrestricted)
       ad@TAC = TAC
     }
     if("TAE" %in% HCR_lever)ad@Effort = TAE
@@ -88,6 +88,7 @@ do_HCR = function(Data, HCR_use, HCR_ICP, HCR_LCP, HCR_fleet, HCR_sens, HCR_leve
     #if(season < 4)  ad@Misc$rel_lev_vals[hh] = old_rel_lev_vals            # in-season, still referenced from previous year
     #if(season == 4) ad@Misc$rel_lev_vals[hh] = new_rel_lev_val             # record update for next year
     ad@Misc$rel_lev_vals = new_rel_lev_vals
+    ad@Misc$Sim_Ind = Sim_Ind
 
   } # use HCR condition
 
@@ -168,7 +169,7 @@ mapseason_index = function(Index, season, ns=4, lag=1){ # seasonal time steps fo
 
 Index_smooth<-function(xx, enp.mult, plot=F, plotname=""){
   tofill<-!is.na(xx)
-  xx[xx==0]<-1E3
+  xx[xx==0]<-min(xx[xx > 0], na.rm = TRUE) / 1000
   predout<-rep(NA,length(xx))
   dat<-data.frame(x=1:length(xx),y=log(xx))
   enp.target<-sum(tofill)*enp.mult
