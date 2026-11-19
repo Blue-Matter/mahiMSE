@@ -97,14 +97,14 @@ do_TAC = function(Data, TAC, rel_TAC, season, ad){
 }
 
 do_PRM = function(Data, PRM, ad){
-  LC = Data@Misc$DataOM@OM@Stock$Dolphinfish@Length@Classes
+  #LC = Data@Misc$DataOM@OM@Stock$Dolphinfish@Length@Classes
   ds = get_dims(Data)
-  LC = Data@Misc$DataOM@OM@Stock$Dolphinfish@Length@Classes
-  mal = rep(NA,ds$nl)
+  #LC = Data@Misc$DataOM@OM@Stock$Dolphinfish@Length@Classes
+  #mal = rep(NA,ds$nl)
   dmlist = list()
   for(ff in 1:ds$nf){
-    mal[]=PRM[[ff]]
-    dmlist[[ff]] = DiscardMortality(MeanAtLength = mal,Classes = LC)#array(PRM[[ff]],c(nLC,dm$nt,dm$nr))
+    #mal[]=PRM[[ff]]
+    dmlist[[ff]] = DiscardMortality(MeanAtAge = PRM[[ff]])#array(PRM[[ff]],c(nLC,dm$nt,dm$nr))
   }
   ad@DiscardMortality = dmlist
   ad

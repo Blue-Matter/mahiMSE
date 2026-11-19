@@ -2,7 +2,9 @@
 # HCR_fleet = list(c(1,6)); HCR_sens = c(1,0.5); HCR_lever = c("TAC", "TAE");
 # HCR_up_max = c(0.2,0.1); HCR_down_max = c(0.2,0.2); HCR_input = c(1,2); plot=T; onlyHCR = F
 do_HCR = function(Data, HCR_use, HCR_ICP, HCR_LCP, HCR_fleet, HCR_sens, HCR_lever,
-                  HCR_up_max, HCR_down_max, HCR_input,  HCR_smooth, Sim_Ind, plot, onlyHCR, season, ad){
+                  HCR_up_max, HCR_down_max,  HCR_up_min, HCR_down_min, HCR_input,
+                  HCR_smooth, HCR_lever_multiplier,
+                  Sim_Ind, plot, onlyHCR, season, ad){
 
   # Notes:
   # Relative TAC level (relative to 2022) goes in in Data@Misc$rel_lev_vals and out in ad@Misc$rel_lev_vals (for determining acceptible rate of change)
@@ -24,7 +26,6 @@ do_HCR = function(Data, HCR_use, HCR_ICP, HCR_LCP, HCR_fleet, HCR_sens, HCR_leve
     #}
 
     nHCR = length(HCR_fleet)
-    #oldAdvice = Data@Advice # advice from previous year including Data@Misc@rel_lev_vals
     old_rel_lev_vals = Data@Misc$rel_lev_vals
     if(is.null(old_rel_lev_vals))old_rel_lev_vals = rep(1, nHCR) # if first advice year
     new_rel_lev_vals = rep(NA,length(old_rel_lev_vals))
@@ -44,9 +45,9 @@ do_HCR = function(Data, HCR_use, HCR_ICP, HCR_LCP, HCR_fleet, HCR_sens, HCR_leve
       if(HCR_lever[hh] == "TAE"){
         hind = match(Data@YearLH, Data@Years)-3:0
         hEffort = Data@Effort@Value[hind,]
-        reflev=sum(hEffort[season,fleets])
+        reflev=sum(hEffort[season,fleets])# * HCR_lever_multiplier[fleets]
       }else if(HCR_lever[hh] =="TAC"){
-        reflev = sum(rTAC[season,fleets,], na.rm=T)
+        reflev = sum(rTAC[season,fleets,], na.rm=T) # * HCR_lever_multiplier[fleets]
       }
 
       if(season == 1){ # Do control calcs for season 1 - updates are annual so can skip this for seasons 2-4
@@ -56,7 +57,9 @@ do_HCR = function(Data, HCR_use, HCR_ICP, HCR_LCP, HCR_fleet, HCR_sens, HCR_leve
         curx = Index[length(Index)]                       # last historical annual index lagged by specified year
         rel_lev_val = old_rel_lev_vals[hh]
         levlab = paste0(HCR_lever[hh],": ", paste(Fleets[fleets],collapse=","))
-        new_rel_lev_vals[hh] = do_HockStick(curx, xCP, yCP, reflev, rel_lev_val, HCR_up_max_hh = HCR_up_max[hh], HCR_down_max_hh = HCR_down_max[hh], HCR_sens_hh = HCR_sens[hh], plot=plot, onlyHCR = onlyHCR, hh, levlab=levlab, Data=Data)
+        new_rel_lev_vals[hh] = do_HockStick(curx, xCP, yCP, reflev, rel_lev_val, HCR_up_max_hh = HCR_up_max[hh], HCR_down_max_hh = HCR_down_max[hh],
+                                            HCR_up_min_hh = HCR_up_min[hh], HCR_down_min_hh = HCR_down_min[hh],
+                                            HCR_sens_hh = HCR_sens[hh], plot=plot, onlyHCR = onlyHCR, hh, levlab=levlab, Data=Data)
       }else{ # same as season 1 adjustment
         new_rel_lev_vals[hh] = old_rel_lev_vals[hh]
       }
@@ -95,7 +98,7 @@ do_HCR = function(Data, HCR_use, HCR_ICP, HCR_LCP, HCR_fleet, HCR_sens, HCR_leve
    ad
 }
 
-do_HockStick = function(curx, xCP, yCP, reflev, rel_lev_val, HCR_up_max_hh, HCR_down_max_hh, HCR_sens_hh, plot=F, onlyHCR=F, hh, levlab="Management Lever",Data){
+do_HockStick = function(curx, xCP, yCP, reflev, rel_lev_val, HCR_up_max_hh, HCR_down_max_hh, HCR_up_min_hh, HCR_down_min_hh, HCR_sens_hh, plot=F, onlyHCR=F, hh, levlab="Management Lever",Data){
 
   if(curx<xCP[1]){
     val = yCP[1]
@@ -108,8 +111,13 @@ do_HockStick = function(curx, xCP, yCP, reflev, rel_lev_val, HCR_up_max_hh, HCR_
   prop_change = ref_update/rel_lev_val             # size of update relative to last change
   sens_change = exp(log(prop_change)*HCR_sens_hh) # apply sensitivity control parameter
   update = update2 = sens_change
-  if((update-1)>HCR_up_max_hh) update2 = 1 + HCR_up_max_hh
-  if((update-1)< (-HCR_down_max_hh)) update2 = 1 - HCR_down_max_hh
+
+  if((update-1) < HCR_up_min_hh & (1-update) < HCR_down_min_hh) { # keep things the same comes first (means min change can in theory be higher than max change !!)
+    update2 = 1
+  }else{                                                          # only if not status quo (means min change can in theory be higher than max change !!)
+    if((update-1) > HCR_up_max_hh) update2 = 1 + HCR_up_max_hh
+    if((1-update) > HCR_down_max_hh) update2 = 1 - HCR_down_max_hh
+  }
   delta = update2 * rel_lev_val
 
   if(plot|onlyHCR){

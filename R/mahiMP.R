@@ -28,8 +28,11 @@
 #' @param HCR_lever The output variable. A vector of character strings nHCR long. E.g., "TAC", "TAE".
 #' @param HCR_up_max The maximum rate of advice increase. Positive imperfect fraction. E.g., 0.2 is a maximum management increase of +20 per cent.
 #' @param HCR_down_max The maximum rate of advice decrease. Positive fraction. E.g. 0.8 is a maximum management decreate of 80 per cent.
+#' @param HCR_up_min The minimum rate of advice increase. Positive imperfect fraction. E.g., 0.02 ignores upward changes of less than 2 percent
+#' @param HCR_down_min The minimum rate of advice decrease. Positive fraction. E.g. 0.05 ignores downward changes of less than 5 percent
 #' @param HCR_input The indices used in the harvest control rule. Vector of integers, nHCR long. E.g., HCR_input = c(2, 1) uses index 2 for the first HCR, index 1 for the second HCR
 #' @param HCR_smooth The effective number of parameters of a polynomial smoother applied to the input indices. Defaults to NA - raw data. A value of 0.1 means that there will be length(Index)*0.1 number of smoothing parameters. Hence, higher values are less smoothing. This parameterization keeps smoothing consistent as the length of the time series increases in projections.
+#' @param HCR_lever_multiplier Multiplier for the y-axis TAC/TAE control by fleet. Vector of improper fractions. The mahiMP uses an object in the mahiMSE package called rTAC which is the recent TAC by fleet. This vector allows for an adjustment to the y-axis control by fleet. You could for example, half future TAC recommendations for the USCom fleet by setting the first value to 0.5.
 #' @param Index_names Vector of character vectors nIndex long. The indices to be generated. See object 'Indices'. The indices simulated. e.g. c("PLL", "PR_Tourn")
 #' @param Index_cv  Vector of positive real numbers nIndex long. User override for the coefficient of variation of the index (CV). NA means stat properties are estimated from model fit
 #' @param Index_ac Vector of fractions nIndex long. User override for the The lag-1 autocorrelation of the index. (Generally positive). NA means stat properties are estimated from model fit
@@ -52,7 +55,6 @@ mahiMP = function(Data,
                   rel_TAC = NA,
                   TAE = NA,
                   rel_TAE = 1,
-
                   SLmin = c(0,    0,    500,  0,    500,  0),
                   SLmax = c(1E4,  1E4,  1E4,  1E4,  1E4,  1E4),
                   TL =    c(NA,   54,   54,   54,   54,   NA),
@@ -63,10 +65,13 @@ mahiMP = function(Data,
                   HCR_fleet = list(NA),
                   HCR_sens = 1,
                   HCR_lever = "TAC",
-                  HCR_up_max = 0.5,
-                  HCR_down_max = 0.5,
+                  HCR_up_max = 0.2,
+                  HCR_down_max = 0.2,
+                  HCR_up_min = 0,
+                  HCR_down_min = 0,
                   HCR_input = 1,
                   HCR_smooth = 0.3,
+                  HCR_lever_multiplier = c(1, 1, 1, 1, 1, 1),
                   Index_names = NA,
                   Index_cv = NA,
                   Index_ac = NA,
@@ -80,8 +85,6 @@ mahiMP = function(Data,
                   debugts = 152,
                   debugDatafile = NA,
                   docheck = FALSE,
-                  NinterimTS = 16,
-                  InterimCatch =
                   ...){
 
   # ARGS:
@@ -89,6 +92,8 @@ mahiMP = function(Data,
   #   Data = Example_Data_2; TAC = NA; rel_TAC = NA; TAE = NA; rel_TAE = 1;  SLmin = c(0,    0,    500,  0,    500,  0);  SLmax = c(1E4,  1E4,  1E4,  1E4,  1E4,  1E4)
   #   TL =    c(NA,   54,   54,   54,   54,   NA);  PRM =  list(0.25, 0.25, 0.25, 0.25, 0.25, 0.25)
   #   HCR_use = F; Index_names = "PLL";  Index_cv = NA;  Index_ac = NA;  Index_lag = 1; Index_seed = 1; Index_beta = F; TL_empirical = T; plot =T; onlyHCR=FALSE
+  #   HCR_use = TRUE;  HCR_ICP = list(c(0, 4.5)) ;  HCR_LCP = list(c(0, 3));  HCR_fleet =  list(1:5); HCR_sens = 1; HCR_lever = "TAC";   HCR_up_max = 0.2;   HCR_down_max = 0.2
+  #   HCR_up_min = 0;  HCR_down_min = 0;   HCR_input = 1;  HCR_smooth = 0.3; HCR_lever_multiplier = c(1, 1, 1, 1, 1, 1)
   #   debugfile = NA; debugts = 158; debugDatafile = NA; docheck = F
 
   mahiMPcheck(docheck, Data, TAC, TAE, SLmin, SLmax, TL)             # Check dimensions and specs [0]
@@ -96,6 +101,8 @@ mahiMP = function(Data,
 
   Sim_Ind = gen_ind_2(Data, Index_names, Index_cv, Index_ac,         # Generate abundance indices [2]
                       Index_lag, Index_seed, Index_beta, season, plot=plot)
+
+  writedebug(debugfile, debugts, Data, Sim_Ind, debugDatafile)       # Internal debugging data if debugfile !=NA [0]
 
   ad = new('advice')                                                 # Make new Advice object
 
@@ -110,14 +117,13 @@ mahiMP = function(Data,
     ad = do_size(Data, SLmin, SLmax, ad)                               # Adds any specified size limits [2]
     ad = do_TL(Data, TL,  plot, TL_empirical, season, ad)              # Apply any bag limits where there are data BL_info [13]
     ad = do_HCR(Data, HCR_use, HCR_ICP, HCR_LCP, HCR_fleet, HCR_sens,  # Harvest control rule comes last as it adds dynamic rules [762]
-                HCR_lever, HCR_up_max, HCR_down_max, HCR_input,
-                HCR_smooth, Sim_Ind, plot = plot, onlyHCR = onlyHCR,
-                season = season, ad)
+                HCR_lever, HCR_up_max, HCR_down_max, HCR_up_min, HCR_down_min, HCR_input,
+                HCR_smooth, HCR_lever_multiplier, Sim_Ind, plot = plot,
+                onlyHCR = onlyHCR, season = season, ad)
   }
 
   if(plot) plot_mahi_ad(ad)                                          # Plots internal calculations (smoothing, TL, HCR)
 
-  writedebug(debugfile, debugts, Data, Sim_Ind, debugDatafile)       # Internal debugging data if debugfile !=NA [0]
 
   ad
 }
