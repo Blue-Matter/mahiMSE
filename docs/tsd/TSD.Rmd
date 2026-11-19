@@ -22,7 +22,7 @@ output:
   pdf_document:
     toc: yes
     fig_caption: true
-subtitle: Performance metrics, operating models, management procedures and diagnostics (v1.2, post CIE peer-review in July 2026)  
+subtitle: Performance metrics, operating models, management procedures and diagnostics (v1.3, post CIE peer-review in July 2026, post catch reconditioning)  
 vignette: |
   %\VignetteIndexEntry{ABT-MSE} %\VignetteEngine{knitr::rmarkdown} %\VignetteEncoding{UTF-8}
 ---
@@ -234,7 +234,7 @@ Figure `r (plus())`. Management jurisdictions as described by Ammendment 10 to t
 
 When confronted with spatial catch data it was apparent that, for areas of smaller geographic size, there was a large mismatch between catch magnitude and the spatial biomass index inferred by the VAST model. This is due to the highly migratory behavior of Dolphinfish: high fishing effort and large catches of fish in their transition through a small area over time scales much shorter than the seasonal time step. In this case, the biomass available to fishing in that season is very large even though the catch rates (the ratio VAST uses to quantify biomass) can remain relatively low.
 
-It was necessary to broaden these areas and to better quantify spatiao-temporal distribution of Dolphinfish given their rapid movement. Five areas were defined that are similar to those of Damiano et al. (2024) but follow the U.S. EEZ (Table `r (getT())`, Figure `r (getF())`).
+It was necessary to broaden these areas and to better quantify spatio-temporal distribution of Dolphinfish given their rapid movement. Five areas were defined that are similar to those of Damiano et al. (2024) but follow the U.S. EEZ (Table `r (getT())`, Figure `r (getF())`).
 
 
 Table `r (Tplus())`. The discrete spatial strata. 
@@ -685,19 +685,19 @@ plotatab('docs/tables/Various.xlsx','RCM_params',T)
 
 The RCM model includes standardized reporting that describes inputs, model estimates, likelihood components and visualizes fit to data. 
 
-RCM model fitting reports are available for all reference case operating models. Note that reference operating model factors relating to future recruitment and movement are added post-hoc to the fitted spatial aggregated operating models of conditioning step 1. Hence there are eight conditioned operating models spanning two levels for natural mortality, steepness and historical catch levels. The RCM fitting reports for the eight conditioned OMs are available in the following table: 
+RCM model fitting reports are available for all reference case operating models. Note that reference operating model factors relating to future recruitment are added post-hoc to the fitted spatial aggregated operating models of conditioning step 1 (this axis of uncertainty does not affect historical conditioning). All 32 OMs resample parameter inputs independently. However we only show results for 16 that are essentially unique in their conditioning assumptions (recruitment axis is projection only). The RCM fitting reports for these conditioned OMs are available in the following table: 
 
 ```{r Fit_reps, eval=T,echo=F}
 makelinktab('C:/GitHub/mahiMSE/docs/tsd/data/Fits',"data/Fits",'RCM Conditioning Report')
 ```
 
 
-## Step 2. Characterize Movement Implied by Spatial Indices (VAST)
+## Step 2. Characterize Movement Implied by Spatial Indices (VAST and GLM approaches)
 
-Seasonal movement dynamics that match the distribution of the spatial VAST index (5 areas) were superimposed to create a spatial operating model (adding a spatial dimension to the RCM - estimated OM). 
+Seasonal movement dynamics that match the distribution of the spatial VAST and GLM indices (5 areas) were superimposed to create a spatial operating model (adding a spatial dimension to the RCM - estimated OM). 
 
 
-The seasonal spatial predictions of the VAST model can be used to calculate a Markov movement matrix $\Delta$ for every historical transition (Figure `r (getF())`). To estimate all movement transitions from each area to each area would require information on each of these transitions (e.g., from a very extensive tagging study). In this case we only have the starting distribution (the fraction in each area going into the movement matrix) $D_{t-1,from}$, from the previous time step $t-1$ and the resulting fraction in each area $D_{t, to}$ in the subsequent timestep $t$ as a result of the movement. 
+The seasonal spatial predictions of the spatial models can be used to calculate a Markov movement matrix $\Delta$ for every historical transition (Figure `r (getF())`). To estimate all movement transitions from each area to each area would require information on each of these transitions (e.g., from a very extensive tagging study). In this case we only have the starting distribution (the fraction in each area going into the movement matrix) $D_{t-1,from}$, from the previous time step $t-1$ and the resulting fraction in each area $D_{t, to}$ in the subsequent timestep $t$ as a result of the movement. 
 
 In this application we use the gravity model formulation of Carruthers et al. (2011) and Taylor et al. (2011) which is suitably constrained. This approach aims for a given level of mean viscosity (probability of staying in each area - the positive diagonal) by adjusting a gravity parameter $g$ and a viscosity parameter $v$ by area.  
 
@@ -720,7 +720,7 @@ The predicted distribution $\hat{D_{t}}$ is given by:
 
 $$ \hat{D_{t}} = D_{t-1}\Delta_{t}$$
 
-Estimation of the $g$ and $v$ terms was conducted in R using the 'nlminb' function for non-linear estimation. There were three components to the negative log likelihood function: fit to the observed VAST distribution $D_{to}$, fit to a user-specified level of stock viscosity $V$ and a weak prior for the $g$ and $v$ terms. 
+Estimation of the $g$ and $v$ terms was conducted in R using the 'nlminb' function for non-linear estimation. There were three components to the negative log likelihood function: fit to the observed spatial distribution $D_{to}$, fit to a user-specified level of stock viscosity $V$ and a weak prior for the $g$ and $v$ terms. 
 
 Component 1: Fit to the observed distribution $D_{t}$ was evaluated with a relatively precise normal likelihood function:
 
@@ -812,9 +812,9 @@ Figure `r (plus())`. Historical estimated recruitment for four simulations, incl
 
 This sequential approach to conditioning operating models for Dolphinfish captures the important properties of dolphinfish dynamics;
 
-* Plausible scale and recruitment variability (Step 1: Estimate scale, seasonal reproduction and fishery selectivity in a spatially aggregated model)
+* Plausible scale and recruitment variability (Step 1: Estimate scale, seasonal reproduction and fishery selectivity in a spatially aggregated model) (note that the fit is conducted on a given catch construction and total index, both of which are axes of uncertainty in the reference grid)
 * Captures uncertainty in stock and fishery dynamics (stochastic inputs for *M*, *K* and stochastic estimates of selectivity, Estimate scale, seasonal reproduction and fishery selectivity in a spatially aggregated model)
-* Absolute abundance differences among areas (Step 2: Characterize movement implied by spatial indices (VAST))
+* Absolute abundance differences among areas (Step 2: Characterize movement implied by spatial indices (VAST and GLM))
 * Seasonality in abundance (Step 2: Characterize movement implied by spatial indices (VAST))
 * Varying seasonality among areas (Step 2: Characterize movement implied by spatial indices (VAST))
 * Matches spatial catches by fleet and season. (Step 3: Imposing Spatial Structure and Solving for Spatial Exploitation Rate)
@@ -840,7 +840,7 @@ Reference operating models are intended to capture the primary uncertainties rel
 
 Reference set operating models serve as the core basis for comparatively evaluating the performance of candidate management procedures (CMPs). These reference set operating models may be weighted to reflect varying plausibility of the simulated scenarios. In general, reference operating models may be empirically derived and are not specified from only expert judgement or other subjective approaches. 
 
-For Dolphinfish, spatial considerations of stock distribution, stock mixing and fishing opportunity are additional key uncertainties. Preliminary reference operating models were designed as an orthogonal grid of 5 factors with two levels of each factor. Those factors included natural survival (*M*), magnitude in mean recruitment (based on time periods of historical estimated recruitment), stock resilience (steepness), spatial distribution and stock viscosity. With two levels for each factor this leads to a total of 32 operating models (Table `r (getT())`). Uncertainty in stock status is included within operating models of the reference grid and characterized by stochasticity among the RCM conditioned simulations in each operating model. 
+For Dolphinfish, spatial considerations of stock distribution, stock mixing and fishing opportunity are additional key uncertainties. Preliminary reference operating models were designed as an orthogonal grid of 5 factors with two levels of each factor. Those factors included natural survival (*M*), magnitude in mean recruitment (based on time periods of historical estimated recruitment), stock resilience (steepness), level of international catches (catch) and spatial distribution (index). With two levels for each factor this leads to a total of 32 operating models (Table `r (getT())`). Uncertainty in stock status is included within operating models of the reference grid and characterized by stochasticity among the RCM conditioned simulations in each operating model. 
 
 The reference set is a fully orthogonal grid with two levels for each of five factors.
 
@@ -879,9 +879,9 @@ In this MSE we bracket mean steepness with disparate values of 0.7 and 0.95 (a v
 Figure `r (plus())`. Distribution of steepness (Beverton-Holt stock-recruitment relationship) sampled for operating models of the reference grid (low: mean = 0.7, high: mean = 0.95).
 
 
-### Factor 3: Catch Magnitude of Discard and Unreported Fleets
+### Factor 3: Catch Magnitude of International Fleets
 
-In order to capture uncertainty in the magnitude of discard and unreported fleets, 50% and 100% of the base catch for these fleets were selected as appropriate levels. Note that lower catches are the relevant direction of uncertainty since these infer a smaller overall stock subject to a higher fraction of exploitation by the US fleets for which MPs are to be tested. 
+In order to capture uncertainty in the magnitude of non-US fishing, high and low international catches were dervied. Note that lower catches are the relevant direction of uncertainty since these infer a smaller overall stock subject to a higher fraction of exploitation by the US fleets for which MPs are to be tested. 
 
 ### Factor 4: Future Recruitment Strength
 
@@ -894,22 +894,9 @@ Figure `r (plus())`. Example of maximum likelihood estimates of recruitment devi
 It is not clear whether the stock will revert to the long-term mean recruitment deviations or remain at a lower than expected level. To recognized this uncertainty and characterize it, projections of recruitment assume that these are sampled stochastically with autocorrelation around a mean level that is 75% and 100% of historical levels.  
 
 
-### Factor 5: Spatial Mixing and Movement
+### Factor 5: Spatial Distribution
 
-Using a gravity model, movement matrices were calculated that matched the biomass changes inferred by the VAST spatial index while aiming for a specified probability of the stock staying in the same area among seasons. 
-
-Below are two examples where a movement matrix is calculated that corectly moves the distribution of fish inferred by the VAST index in Summer 2022, redistributing this in Autumn 2022 (Figure `r (getF())`). 
-
-
-<img src="img/Data/MovEG40.png" width="400">
-
-Figure `r (plus())`. Example of a movement matrix derived from the gravity modelling approach that aims for 40% probability of staying (positive diagonal) while correctly moving the distribution of fish in Summer 2022 (fracsin) to match the distribution of fish in Autumn 2022 (fracsout).   
-
-<img src="img/Data/MovEG60.png" width="400">
-
-Figure `r (plus())`. Example of a movement matrix derived from the gravity modelling approach that aims for 60% probability of staying (positive diagonal) while correctly moving the distribution of fish in Summer 2022 (fracsin) to match the distribution of fish in Autumn 2022 (fracsout).
-
-Movement matrices were calculated for target probabilities of staying of 20%, 40%, 60% and 80%. Levels of 40% and 60% were used in the reference set for the factor 'spatial mixing and movement'. Levels of 20% and 80% probability of staying were used to specify robustness operating models.  
+Using a gravity model, movement matrices were calculated that matched the biomass changes inferred by the GLM and VAST spatial indices. Movement matrices were calculated for a target probability of staying of 60%. Earlier rounds of testing and the peer-review revealed that viscosity was relatively inconsequential in determining MP perofrmance. However, alternative viscosities of 40% and 80% were added to the robustness set of operating models.  
 
 
 <br>
@@ -918,7 +905,7 @@ Movement matrices were calculated for target probabilities of staying of 20%, 40
 
 The reference case operating model is a single well-characterized and well-understood hypothesis that serves as a familiar and concise basis for quickly investigating sensitivities, alternative MPs etc. It is a tool for efficiently obtaining quantitative  answers to working group questions (e.g., "does it make a difference to MP selection if historical catches are under reported"?).
 
-The current Reference Case operating model is OM_29 that has low M, low steepness, full historical catches, continuation of historical mean recruitment and high stock mixing. 
+The current Reference Case operating model is OM_29 that has low M, low steepness, high international fleet catches, continuation of historical mean recruitment and movement and distribution consistent with the VAST spatial index. 
 
 
 ## Plausibility Weighting
@@ -927,7 +914,7 @@ Given the high uncertainty regarding Dolphinfish life history dynamics, fishery 
 
 ## Robustness Set Operating Models
 
-Robustness set operating models represent secondary uncertainties that may not be well informed by data, involve alternative future scenarios that are derived from subjective judgement or represent the viewpoints or experience of particular stakeholders or scientists. The purpose of the robustness operating models is to provide a means of further discrimation among management procedures that perform similarly for the reference set of operating models. Robustness operating models also provide performance outcomes for hypotheses specific to certain stakeholder groups (e.g., "how will northward shifts in biomass affect catch outcomes for Florida fisheries"?). 
+Robustness set operating models represent secondary uncertainties that may not be well informed by data, involve alternative future scenarios that are derived from subjective judgement or represent the viewpoints or experience of particular stakeholders or scientists. The purpose of the robustness operating models is to provide a means of further discrimination among management procedures that perform similarly for the reference set of operating models. Robustness operating models also provide performance outcomes for hypotheses specific to certain stakeholder groups (e.g., "how will northward shifts in biomass affect catch outcomes for Florida fisheries"?). 
 
 Table `r (Tplus())`. Robustness operating models. Single factor variants of the reference case operating model. 
 
@@ -1230,7 +1217,7 @@ Alternatively, for a faster approach that also allows for custom results plottin
 ```{r slickR, eval=F,echo=T}
 remotes::install_github('blue-matter/Slick')
 library(Slick)
-slick = readRDS("where_you_saved_the_object/mahiSlick_1.slick")
+slick = readRDS("where_you_saved_the_object/mahiSlick_3.slick")
 App(slick = slick)
 
 ```

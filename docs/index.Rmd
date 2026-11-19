@@ -187,9 +187,15 @@ kable(dat,"simple",col.names=rep("",2))
 
 # Progress
 
-The Prerequisite, Foundation, Initial and Revision phases have been completed (Figure 1). These form the basis for the completed MSE framework which is now subject to CIE peer-review (July 2026). 
+The Prerequisite, Foundation, Initial and Revision phases have been completed (Figure 1). These form the basis for the completed MSE framework which was subject to CIE peer-review (July 2026). 
+
+The MSE framework has subsequently been updated to address the comments of reviewers (see below for links), the key aspects being the removal of the mixing axis of uncertainty (it was not consequential) in favor of including an alternative spatial distribution determined by a conventional GLM model (in addition to VAST) and a larger uncertainty over international catches in the catch uncertainty axis.  
+
 
 Important methodological components of the Refinement and Adoption phases have been completed such as proposed tuning targets and tuning methods, description of all quantitative performance metrics and the production of an interactive Slick object for viewing MSE results. 
+
+
+The current priority is presentation of updated demonstration MP results in order to received feedback from the South Atlantic Council on their preferred direction and options for candidate MPs (i.e. the Refinement phase)
 
 
 <img src="img/roadmap_peer_review.png" width = 800>
@@ -198,14 +204,14 @@ Figure 1. Progress in the MSE roadmap. For more information about the roadmap an
 
 ***
 
-# For the Peer - Review Team
+# Technical Details
 
 ## Trial Specification Document
 
-The principle document that describes the technical aspects of the MSE framework is the [Trial Specifications Document (TSD)](tsd/TSD.html) - a comprehensive guide to MSE framework development. This is probably the most important source material for your review as it describes and links all of the code, supporting documentation and equations. 
+The principle document that describes the technical aspects of the MSE framework is the [Trial Specifications Document (TSD)](tsd/TSD.html) - a comprehensive guide to MSE framework development. This is probably the most important source material becaues it covers all of the code, supporting documentation and equations. 
 
 
-## Presentations for Review Meeting
+## Presentations of Peer Review Meeting (July 2026, Charleston)
 
 The presentations of the review meeting roughly follow the steps of the Trial Specifications Document but they include direct reference to the Terms of Reference. These may or may not be of interest.
 
@@ -227,14 +233,18 @@ The presentations of the review meeting roughly follow the steps of the Trial Sp
 [8. MP Performance Summary](https://docs.google.com/presentation/d/15DNfT8rJBvFSBvFbkEjkoTIPZeGnnIhxE9tICgqBx1w/edit?usp=sharing)
 
 
-## Performance Work Statement (inc Terms of Reference)
+## Peer Reviewer Individual Reports
 
-The [Performance Work Statement](supporting/PWS_SEDAR_104.docx) for SEDAR 104 contains relevant review information such as background, scope, tasks, reporting requirements, terms of reference and a preliminary agenda.
+[Dr Ernesto Jardim](PR_reports/2026_10 Jardim SEDAR 104 review report.pdf)
+
+[Dr Daniel Howell](PR_reports/2026_10 Howell SEDAR 104 review report.pdf)
+
+[Dr Gary Melvin](PR_reports/2026_10 Melvin SEDAR 104 review report.pdf)
 
 
 ## Demonstration MSE results
 
-1. Download the [Slick object](tsd/data/Slick/mahiSlick_1.slick) with demonstration MSE results
+1. Download the [Slick object](tsd/data/Slick/mahiSlick_3.slick) with demonstration MSE results
 2. Go to the [Slick App Online](https://shiny.bluematterscience.com/app/slick)
 3. Load up the slick object from your computer and explore results. 
 
