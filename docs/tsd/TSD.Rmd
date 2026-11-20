@@ -303,15 +303,15 @@ Operating models are conditioned on season- and fleet-specific catch data from `
 
 <img src="img/Data/Annual_landings.jpg" width="500">
 
-Figure `r (plus())`. Annual landings by fleet that are assumed in operating model conditioning. Two levels of catches were specified for the discard (Disc) and unreported (UnRep) fleets: 50% and 100% of the NOAA estimates.  
+Figure `r (plus())`. Annual landings by fleet that are assumed in operating model conditioning. Low and high catch scenarios for the International fleet were identified.  
 
 <img src="img/Data/Landings_bar_2022.jpg" width="500">
 
-Figure `r (plus())`. Landings by fleet and area in 2022 (the final year of the operating model conditioning) for the base assumption of 100% catches of Discard and Unreported fleets. 
+Figure `r (plus())`. Landings by fleet and area in 2022 (the final year of the operating model conditioning) for the base assumption of high International catches. 
 
 <br>
 
-Table `r (Tplus())`. Low catch scenario: Percentage of catches by fishing fleet for all historical years (base assumption of 100% catches of Discard and Unreported fleets).  
+Table `r (Tplus())`. Low catch scenario: Percentage of catches by fishing fleet for all historical years (base assumption of high international catches).  
 
 ```{r SeasonalCatch1, eval=T,echo=F}
 
@@ -327,7 +327,7 @@ rownames(seas.matp) = c("Winter","Spring","Summer","Autumn")
 kable(seas.matp )
 ```
 
-Table `r (Tplus())`. High catch scenario: Percentage of catches by fishing fleet for all historical years (base assumption of 100% catches of Discard and Unreported fleets).  
+Table `r (Tplus())`. High catch scenario: Percentage of catches by fishing fleet for all historical years (base assumption of high International catches).  
 
 ```{r SeasonalCatch2, eval=T,echo=F}
 
@@ -343,7 +343,7 @@ kable(seas.matp )
 
 
 
-Table `r (Tplus())`. Low catch scenario: Percentage of catches by fishing fleet for the last historical 3 years (2020 - 2022) (base assumption of 100% catches of Discard and Unreported fleets).  
+Table `r (Tplus())`. Low catch scenario: Percentage of catches by fishing fleet for the last historical 3 years (2020 - 2022) (base assumption of high International catches).  
 
 ```{r SeasonalCatch10, eval=T,echo=F}
 C_tf = apply(C_yfr_list[[1]],1:2,sum,na.rm=T)/1000
